@@ -1,0 +1,196 @@
+{
+	"files.insertFinalNewline": true,
+	"files.trimFinalNewlines": true,
+	"files.trimTrailingWhitespace": true,
+	"editor.fontSize": 12,
+
+	"python.defaultInterpreterPath": "./.venv/bin/python",
+	"python.linting.enabled": true,
+	"python.linting.lintOnSave": true,
+	"python.testing.promptToConfigure": false,
+	"python.linting.pylintEnabled": false,
+	"python.linting.flake8Enabled": true,
+	"python.linting.flake8Path": "./.venv/bin/flake8",
+	"python.linting.flake8Args": [
+		"--max-line-length=100",
+		"--verbose"
+	],
+	"python.formatting.provider": "black",
+	"python.formatting.blackPath": "./.venv/bin/black",
+	"isort.path":[
+		"./.env/python",
+		"-m",
+		"isort"
+	],
+	"python.analysis.logLevel": "Trace",
+	"python.analysis.typeCheckingMode": "off",
+	"python.languageServer": "Pylance",
+
+	"[python]": {
+		"editor.defaultFormatter": "ms-python.python",
+		"editor.rulers": [80, 100],
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 4,
+		"editor.formatOnSave": true,
+		"editor.formatOnPaste": false,
+		"editor.formatOnSaveMode": "file"
+	},
+
+	"[dockercompose]": {
+		"editor.detectIndentation": false,
+		"editor.insertSpaces": true,
+		"editor.tabSize": 2
+	},
+
+	"typescript.preferences.quoteStyle": "single",
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"typescript.preferences.importModuleSpecifier": "relative",
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true,
+        "editor.tabSize": 2
+	},
+
+	"javascript.preferences.quoteStyle": "single",
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true,
+        "editor.tabSize": 2
+	},
+
+	"[json]": {
+	    "editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true,
+		"editor.tabSize": 2
+	},
+
+	"[YAML]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+
+	"files.exclude": {
+		"**/.venv**": true,
+		"**/venv**": true,
+		"**/__pycache__": true,
+		"out": true,
+		"dist": true,
+		"**/*.pyc": true,
+		".nyc_output": true,
+		"obj": true,
+		"bin": true,
+		"**/node_modules": true,
+		".vscode-test": false,
+		".vscode test": false,
+		"**/.mypy_cache/**": true,
+		"**/.pytest_cache/**": true,
+		"**\/CVS": true,
+    	"**\/.DS_Store": true,
+    	"**\/.hg": true,
+    	"**\/.svn": true,
+    	"**\/.git": true,
+    	"node_modules": true
+	},
+
+	"search.exclude": {
+		"**/.venv**": true,
+		"**/venv**": true,
+		"**/__pycache__": true,
+		"out": true,
+		"dist": true,
+		"**/node_modules": true,
+		"coverage": true,
+		"languageServer*/**": true,
+		".vscode-test": true,
+		".vscode test": true,
+		"**/.pytest_cache/**": true,
+		"**\/CVS": true,
+    	"**\/.DS_Store": true,
+    	"**\/.hg": true,
+    	"**\/.svn": true,
+    	"**\/.git": true,
+    	"node_modules": true
+	},
+	"prettier.printWidth": 100,
+	"prettier.singleQuote": true,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"python.testing.pytestArgs": [
+		"tests"
+	],
+	"python.testing.pytestEnabled": true,
+	"python.envFile": "${workspaceFolder}/.env",
+	"material-icon-theme.languages.associations": {
+		"dotenv": "tune"
+	},
+	"material-icon-theme.files.associations": {
+		"tsconfig.json": "tune",
+		"*.webpack.js": "webpack",
+		"*.proto": "3d",
+		"ormconfig.json": "database"
+	},
+	"material-icon-theme.activeIconPack": "nest",
+	"material-icon-theme.folders.associations": {
+		"adapters": "contract",
+		"grpc": "pipe",
+		"kube": "kubernetes",
+		"main": "lib",
+		"websockets": "pipe",
+		"implementations": "core",
+		"protos": "pipe",
+		"entities": "class",
+		"kafka": "pipe",
+		"use-cases": "functions",
+		"migrations": "tools",
+		"schemas": "class",
+		"useCases": "functions",
+		"eslint-config": "tools",
+		"typeorm": "database",
+		"_shared": "shared",
+		"mappers": "meta",
+		"fakes": "mock",
+		"modules": "components",
+		"subscribers": "messages",
+		"domain": "class",
+		"protocols": "contract",
+		"infra": "app",
+		"view-models": "views",
+		"presentation": "template",
+		"dtos": "typescript",
+		"http": "container",
+		"providers": "include",
+		"factories": "class",
+		"repositories": "mappings"
+	},
+	"explorer.compactFolders": false,
+	"git.enableSmartCommit": true,
+	"breadcrumbs.enabled": true,
+	"auto-rename-tag.activationOnLanguage": ["*"],
+	"css.validate": true,
+	"editor.autoIndent": "none",
+	"editor.detectIndentation": false,
+	"editor.minimap.maxColumn": 100,
+ 	"extensions.ignoreRecommendations": true,
+	"git.allowForcePush": true,
+	"git.allowNoVerifyCommit": true,
+	"git.autofetch": true,
+	"git.confirmSync": false,
+	"git.fetchOnPull": true,
+	"git.inputValidationSubjectLength": 72,
+	"git.mergeEditor": true,
+	"git.suggestSmartCommit": false,
+	"gitlens.blame.avatars": false,
+	"gitlens.blame.ignoreWhitespace": true,
+	"gitlens.codeLens.authors.enabled": false,
+	"gitlens.codeLens.enabled": false,
+	"gitlens.codeLens.recentChange.enabled": false,
+	"gitlens.codeLens.scopes": ["document", "containers", "blocks"],
+	"gitlens.hovers.annotations.changes": false,
+	"gitlens.hovers.annotations.enabled": false,
+	"gitlens.keymap": "alternate",
+	"gitlens.views.repositories.avatars": false,
+	"gitlens.views.repositories.files.layout": "list",
+    "explorer.confirmDragAndDrop": false,
+}
