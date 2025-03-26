@@ -4,7 +4,7 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 from app.models.base import Base
-from app.config.database import POSTGRES_URL
+from app.config.database import SQLITE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,7 +29,7 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 def get_url():
-    return POSTGRES_URL
+    return SQLITE_URL
 
 
 def run_migrations_offline() -> None:
