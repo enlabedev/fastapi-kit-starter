@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from app.helpers.enum import NoteCategory
 from app.schemas.base import MetadataSchema, ResponseSchemaBase
@@ -14,7 +13,7 @@ class NoteBaseSchema(BaseModel):
     category: Optional[str] = None
     createdAt: Optional[datetime] = None
     updatedAt: Optional[datetime] = None
-    published: bool
+    published: Optional[bool] = False
 
     model_config = ConfigDict(
         from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
