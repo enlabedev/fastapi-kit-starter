@@ -19,10 +19,15 @@ app.add_middleware(
 app.include_router(router, prefix=settings.API_PREFIX)
 
 
-async def base_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+async def base_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content={"detail": exc.detail},
+        )
     return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail},
+        status_code=500,
+        content={"detail": str(exc)},
     )
 
 

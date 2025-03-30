@@ -107,7 +107,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         result = (
             db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
         )
-        return cast(List[ModelType], result)
+        return result
 
     def update(
         self,

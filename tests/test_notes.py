@@ -30,7 +30,7 @@ class TestNotes:
         assert (
             response.status_code == 200
         ), f"Error al crear nota para test: {response.text}"
-        return response.json()  # Ensure response.json() returns Dict[str, Any]
+        return dict(response.json())
 
     def test_create_note(self) -> None:
         data = self.create_note_via_api()
