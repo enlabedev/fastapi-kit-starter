@@ -21,15 +21,16 @@ class MetadataSchema(BaseModel):
     total_pages: int
 
 
-class DataResponse(ResponseSchemaBase, BaseModel, Generic[T]):
+class DataResponse(ResponseSchemaBase, Generic[T]):
     data: Optional[T] = None
 
-    def custom(self, resp_code: str, message: str):
+    def custom(self, resp_code: int, message: str) -> "DataResponse":
         self.code = resp_code
         self.message = message
         return self
 
-    def success(self, data: T):
-        self.code = "00"
+    def success(self, data: T) -> "DataResponse":
+        self.code = 0  # Changed to an integer to match the type of `code`
         self.data = data
+        self.success = True  # Ensure `success` is updated correctly
         return self
