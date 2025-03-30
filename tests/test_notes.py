@@ -1,89 +1,156 @@
 import uuid
-from typing import Any, Dict
+from typing import Any, Dict, Generator
 
-from app.main import app
-from app.schemas.notes import NoteBaseSchema
+import pytest
 from fastapi.encoders import jsonable_encoder
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
-client = TestClient(app)
+from app.config.database import get_db
+from app.helpers.enum import NoteCategory
+from app.main import app
+from app.schemas.notes import NoteBaseSchema
 
 
-class TestNotes:
-    def setup_method(self) -> None:
-        """Setup class to initialize the test client"""
+@pytest.fixture
+def db_session() -> Generator[Session, None, None]:
+    """
+    Crea una sesión de base de datos para pruebas y la cierra al finalizar.
+    Cada prueba se ejecuta en una transacción que se revierte al finalizar.
+    """
+    # Sobrescribe la dependencia de base de datos
+    def override_get_db() -> Generator[Session, None, None]:
+        from app.config.database import SessionLocal
 
-    def setup_class(self) -> None:
-        """Setup method to create a new note before each test"""
-        self.note_id = str(uuid.uuid4())
-        self.notes = NoteBaseSchema(
-            id=self.note_id,
-            title="Nuevo contenido",
-            content="Despliegues para ramas",
-            category="stick",
-            published=False,
-        )
+        db = SessionLocal()
+        try:
+            db.begin_nested()  # Inicia una transacción con savepoint
+            yield db
+        finally:
+            db.rollback()  # Revierte cualquier cambio
+            db.close()
 
-    def create_note_via_api(self) -> Dict[str, Any]:
-        payload = jsonable_encoder(self.notes)
-        response = client.post("/api/v1/notes", json=payload)
-        assert (
-            response.status_code == 200
-        ), f"Error al crear nota para test: {response.text}"
-        return dict(response.json())
+    # Reemplaza la dependencia original con nuestra versión de prueba
+    app.dependency_overrides[get_db] = override_get_db
 
-    def test_create_note(self) -> None:
-        data = self.create_note_via_api()
-        assert data["data"]["title"] == self.notes.title
+    # Obtiene una sesión usando nuestra función sobrescrita
+    db = next(override_get_db())
+    yield db
 
-    def test_create_note_with_big_category(self) -> None:
-        self.test_create_note()
-        json = jsonable_encoder(self.notes)
-        json["category"] = (
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-            + "Cras consectetur finibus libero vitae viverra"
-        )
-        response = client.post("/api/v1/notes", json=json)
-        assert response.status_code == 422
+    # Limpia las sobrescrituras después de la prueba
+    app.dependency_overrides.clear()
 
-    def test_update_note(self) -> None:
-        """Test updating a note"""
-        data = self.create_note_via_api()
-        note_id = data["data"]["id"]
-        json = jsonable_encoder(self.notes)
-        json["content"] = "Despliegues para 2 ramas"
-        response = client.put(f"/api/v1/notes/{note_id}", json=json)
-        assert response.status_code == 200
-        data = response.json()
-        assert data["data"]["content"] == json["content"]
 
-    def test_show_note(self) -> None:
-        json = jsonable_encoder(self.notes)
-        response = client.get(f"/api/v1/notes/show/{self.note_id}")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["data"]["title"] == json["title"]
+@pytest.fixture
+def client() -> TestClient:
+    """Devuelve un cliente de prueba para la aplicación."""
+    return TestClient(app)
 
-    def test_get_all_note(self) -> None:
-        response = client.get("/api/v1/notes/")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["metadata"]["total_items"] > 0
 
-    def test_search_text_nuevo_int_notes(self) -> None:
-        response = client.get("/api/v1/notes/search/Nuevo contenido")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["metadata"]["total_items"] > 0
+@pytest.fixture
+def test_note() -> NoteBaseSchema:
+    """Crea una instancia de nota para pruebas."""
+    return NoteBaseSchema(
+        id=str(uuid.uuid4()),
+        title="Nota de prueba",
+        content="Contenido de prueba",
+        category=NoteCategory.STICK,
+        published=False
+    )
 
-    def test_search_text_sin_int_notes(self) -> None:
-        response = client.get("/api/v1/notes/search/sin")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["metadata"]["total_items"] == 0
 
-    def test_delete_note(self) -> None:
-        response = client.delete(f"/api/v1/notes/{self.note_id}")
-        assert response.status_code == 200
-        data = response.json()
-        assert data["message"] == "Resource was deleted"
+@pytest.fixture
+def created_note(client: TestClient, test_note: NoteBaseSchema, db_session: Session) -> Dict[str, Any]:
+    """Crea una nota a través de la API y la devuelve."""
+    payload = jsonable_encoder(test_note)
+    response = client.post("/api/v1/notes", json=payload)
+    assert response.status_code == 200, f"Error al crear nota para test: {response.text}"
+    return response.json()["data"]
+
+
+def test_create_note(client: TestClient, test_note: NoteBaseSchema) -> None:
+    """Prueba la creación de una nota."""
+    payload = jsonable_encoder(test_note)
+    response = client.post("/api/v1/notes", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["data"]["title"] == test_note.title
+    assert data["data"]["content"] == test_note.content
+    assert data["data"]["category"] == test_note.category
+    assert data["data"]["published"] == test_note.published
+
+
+def test_create_note_with_invalid_category(client: TestClient, test_note: NoteBaseSchema) -> None:
+    """Prueba la validación al crear una nota con una categoría inválida."""
+    payload = jsonable_encoder(test_note)
+    payload["category"] = "categoria_invalida"
+    response = client.post("/api/v1/notes", json=payload)
+    assert response.status_code == 422
+    data = response.json()
+    assert "detail" in data
+
+
+def test_update_note(client: TestClient, created_note: Dict[str, Any], test_note: NoteBaseSchema) -> None:
+    """Prueba la actualización de una nota."""
+    # Modificar el contenido de la nota
+    update_data = jsonable_encoder(test_note)
+    update_data["content"] = "Contenido actualizado"
+
+    # Enviar solicitud de actualización
+    note_id = created_note["id"]
+    response = client.put(f"/api/v1/notes/{note_id}", json=update_data)
+
+    # Verificar la respuesta
+    assert response.status_code == 200
+    data = response.json()
+    assert data["data"]["content"] == "Contenido actualizado"
+
+
+def test_show_note(client: TestClient, created_note: Dict[str, Any]) -> None:
+    """Prueba la obtención de una nota específica."""
+    note_id = created_note["id"]
+    response = client.get(f"/api/v1/notes/show/{note_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["data"]["id"] == note_id
+    assert data["data"]["title"] == created_note["title"]
+
+
+def test_get_all_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
+    """Prueba la obtención de todas las notas."""
+    response = client.get("/api/v1/notes/")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["metadata"]["total_items"] > 0
+    assert any(note["id"] == created_note["id"] for note in data["data"])
+
+
+def test_search_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
+    """Prueba la búsqueda de notas por texto."""
+    # Buscar por título existente
+    search_term = created_note["title"][:10]  # Usar parte del título
+    response = client.get(f"/api/v1/notes/search/{search_term}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["metadata"]["total_items"] > 0
+
+    # Buscar por texto que no existe
+    response = client.get("/api/v1/notes/search/texto_inexistente_12345")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["metadata"]["total_items"] == 0
+
+
+def test_delete_note(client: TestClient, created_note: Dict[str, Any]) -> None:
+    """Prueba la eliminación de una nota."""
+    note_id = created_note["id"]
+
+    # Eliminar la nota
+    response = client.delete(f"/api/v1/notes/{note_id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["message"] == "Resource was deleted"
+
+    # Verificar que la nota ya no existe
+    response = client.get(f"/api/v1/notes/show/{note_id}")
+    assert response.status_code == 404
