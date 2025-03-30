@@ -1,0 +1,47 @@
+# .pre-commit-config.yaml
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+    -   id: check-yaml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+
+# --- Usa Pysen para formatear y lintar ---
+# Necesitas asegurarte que pysen esté instalado en el entorno que pre-commit usa.
+# La forma más simple es listarlo como dependencia de poetry y ejecutar pre-commit
+# dentro del entorno de poetry (`poetry run pre-commit run -a`) o configurando
+# pre-commit para usar el entorno de poetry.
+# Alternativa: usar `repo: local` y apuntar a `pysen`
+-   repo: local
+    hooks:
+      - id: pysen-format
+        name: pysen-format
+        entry: poetry run pysen format --check # Verifica formato
+        language: system
+        types: [python]
+        pass_filenames: false # Pysen opera sobre las fuentes configuradas
+
+      - id: pysen-lint
+        name: pysen-lint
+        entry: poetry run pysen lint # Ejecuta todos los linters configurados
+        language: system
+        types: [python]
+        pass_filenames: false # Pysen opera sobre las fuentes configuradas
+
+# --- Opcional: Correr Black/MyPy individualmente si prefieres (Redundante si usas Pysen arriba) ---
+# -   repo: https://github.com/psf/black
+#     rev: 24.3.0
+#     hooks:
+#     -   id: black
+# -   repo: https://github.com/pre-commit/mirrors-mypy
+#     rev: v1.9.0
+#     hooks:
+#     -   id: mypy
+#         additional_dependencies: [] # Añade stubs necesarios
+# -   repo: https://github.com/PyCQA/bandit
+#     rev: 1.7.8 # Revisa última versión
+#     hooks:
+#     -   id: bandit
+#         args: ["-c", "pyproject.toml"] # Indicar que use config de pyproject
+#         additional_dependencies: ['toml']
