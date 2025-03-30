@@ -77,7 +77,9 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             raise HTTPException(status_code=404, detail="Item not found")
         return obj
 
-    def create(self, db: Session = SessionLocal(), *, schema: CreateSchemaType) -> ModelType:
+    def create(
+        self, db: Session = SessionLocal(), *, schema: CreateSchemaType
+    ) -> ModelType:
         try:
             item_data = jsonable_encoder(schema)
             model = self.model(**item_data)
@@ -88,12 +90,16 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         except IntegrityError as e:
             db.rollback()
             message = str(e.orig).split(":")[-1].replace("\n", "").strip()
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message)
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+            )
 
     def read(
         self, db: Session = SessionLocal(), *, skip: int = 0, limit: int = 5000
     ) -> List[ModelType]:
-        return db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
+        return (
+            db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
+        )
 
     def update(
         self,
@@ -106,7 +112,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         if isinstance(schema, dict):
             update_data = schema
         else:
-            update_data = schema.dict(exclude_unset=True)
+            update_data = schema.model_dump(exclude_unset=True)
         for field in item_data:
             if field in update_data:
                 setattr(model, field, update_data[field])

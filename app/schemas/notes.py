@@ -1,29 +1,28 @@
-from uuid import UUID, uuid4
+from uuid import UUID
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 from app.schemas.base import ResponseSchemaBase, MetadataSchema
 from app.helpers.enum import NoteCategory
 
 
 class NoteBaseSchema(BaseModel):
-    id: Optional[str]
-    title: str = Field(..., max_length=200)
+    id: Optional[str] = None
+    title: str
     content: str
-    category: Optional[str] = Field(None, max_length=50)
-    published: bool = False
-    createdAt: Optional[datetime]
-    updatedAt: Optional[datetime]
+    category: Optional[str] = None
+    createdAt: Optional[datetime] = None
+    updatedAt: Optional[datetime] = None
+    published: bool
 
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(
+        from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
+    )
 
 
 class NoteListSchema(ResponseSchemaBase):
     class NoteList(NoteBaseSchema):
-        id: UUID
+        id: str
         title: str
 
     data: Optional[list[NoteList]]
@@ -32,14 +31,13 @@ class NoteListSchema(ResponseSchemaBase):
 
 class NoteDetailSchema(ResponseSchemaBase):
     class NoteDetail(NoteBaseSchema):
-        id: UUID
+        id: str
         title: str
 
     data: Optional[NoteDetail]
 
 
 class NoteSchemaCreate(NoteBaseSchema):
-    id: str = str(uuid4())
     title: str
     content: str
     category: NoteCategory
@@ -47,6 +45,7 @@ class NoteSchemaCreate(NoteBaseSchema):
 
 
 class NoteSchemaUpdate(NoteBaseSchema):
+    id: str
     title: str
     content: str
     category: NoteCategory

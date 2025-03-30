@@ -7,10 +7,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-fastapi = {extras = ["all"], version = "^0.90.1"}
-sqlalchemy = "2"
-alembic = "^1.9.3"
-psycopg2 = "^2.9.5"
+fastapi = {extras = ["all"], version = "^0.115.12"}
+sqlalchemy = "^2.0.39"
+alembic = "^1.15.1"
+psycopg2 = "^2.9.10"
+pydantic-settings = "^2.8.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -24,13 +25,9 @@ black = "^23.1.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.pysen]
-version = "0.10"
-
 [tool]
 [tool.black]
 line-length = 100
-target-version = ["py310"]
 
 [tool.isort]
 default_section = "THIRDPARTY"
@@ -49,7 +46,6 @@ enable_isort = true
 enable_mypy = false
 mypy_preset = "strict"
 line_length = 100
-py_version = "py310"
 
 [[tool.pysen.lint.mypy_targets]]
     paths = ["app", "tests"]

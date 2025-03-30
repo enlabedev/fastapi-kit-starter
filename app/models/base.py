@@ -1,6 +1,10 @@
-from sqlalchemy.orm import declarative_base, declared_attr
-from sqlalchemy import TIMESTAMP, Column, text, UUID
+from sqlalchemy.orm import declarative_base, declared_attr, sessionmaker
+from sqlalchemy import TIMESTAMP, Column, UUID, create_engine, String
 from sqlalchemy.sql import func
+from uuid import uuid4
+
+# Define the engine (replace 'sqlite:///example.db' with your database URL)
+engine = create_engine("sqlite:///example.db")
 
 
 class Base:
@@ -12,6 +16,7 @@ class Base:
         return cls.__name__.lower()
 
 
+TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base(cls=Base)
 
 
@@ -19,10 +24,11 @@ class BareBaseModel(Base):
     __abstract__ = True
 
     id = Column(
-        UUID(as_uuid=True),
+        String(36),
         primary_key=True,
-        default=text("gen_random_uuid()"),
+        default=lambda: str(uuid4()),
         unique=True,
+        index=True,
     )
     createdAt = Column(TIMESTAMP(timezone=True), default=func.now())
     updatedAt = Column(TIMESTAMP(timezone=True), onupdate=func.now())

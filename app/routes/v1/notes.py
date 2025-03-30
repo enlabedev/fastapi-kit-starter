@@ -5,7 +5,13 @@ from app.config.database import get_db
 from app.models.notes import Notes
 from app.schemas.base import ResponseSchemaBase
 from app.helpers.response import ResponseHelper
-from app.schemas.notes import NoteListSchema, NoteDetailSchema, NoteSchemaCreate, NoteSchemaUpdate
+from app.schemas.notes import (
+    NoteListSchema,
+    NoteDetailSchema,
+    NoteSchemaCreate,
+    NoteSchemaUpdate,
+)
+
 
 router = APIRouter()
 
@@ -42,7 +48,6 @@ async def show(id: str):
 @router.post("", response_model=NoteDetailSchema)
 async def create(*, notes: NoteSchemaCreate):
     notes = Notes(
-        id=notes.id,
         title=notes.title,
         content=notes.content,
         category=notes.category,
@@ -53,7 +58,9 @@ async def create(*, notes: NoteSchemaCreate):
 
 
 @router.put("/{id}", response_model=NoteDetailSchema)
-async def update(*, id: str, db: Session = Depends(get_db), note_data: NoteSchemaUpdate):
+async def update(
+    *, id: str, db: Session = Depends(get_db), note_data: NoteSchemaUpdate
+):
     note = controllers.notes.get(db=db, id=id, error_out=True)
     notes = controllers.notes.update(db=db, model=note, schema=note_data)
     return {"data": notes}

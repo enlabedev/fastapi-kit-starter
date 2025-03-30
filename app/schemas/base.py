@@ -1,6 +1,6 @@
 from typing import Optional, Generic, TypeVar
 from pydantic import BaseModel
-from pydantic.generics import GenericModel
+
 
 T = TypeVar("T")
 
@@ -21,7 +21,7 @@ class MetadataSchema(BaseModel):
     total_pages: int
 
 
-class DataResponse(ResponseSchemaBase, GenericModel, Generic[T]):
+class DataResponse(ResponseSchemaBase, BaseModel, Generic[T]):
     data: Optional[T] = None
 
     def custom(self, resp_code: str, message: str):
