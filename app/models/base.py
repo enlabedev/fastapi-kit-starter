@@ -1,4 +1,4 @@
-from typing import Type, Any
+from typing import Any, Type
 from uuid import uuid4
 
 from sqlalchemy import TIMESTAMP, Column, String
