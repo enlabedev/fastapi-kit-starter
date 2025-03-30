@@ -1,10 +1,21 @@
-from typing import Any, Dict, Generic, List, Optional, Protocol, Type, TypeVar, Union
+from typing import (
+    Any,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Protocol,
+    Type,
+    TypeVar,
+    Union,
+    cast,
+)
 
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
 
 # Protocol to enforce the presence of an `id` attribute
@@ -26,7 +37,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
-    def q(self, *criterion: Any, db: Session) -> Any:
+    def q(self, *criterion: Any, db: Session) -> Query:
         """
         Filter by criterion, ex: User.q(User.name=='Thuc', User.status==1)
         """
@@ -34,7 +45,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             return db.query(self.model).filter(*criterion)
         return db.query(self.model)
 
-    def q_by(self, db: Session, **kwargs: Any) -> Any:
+    def q_by(self, db: Session, **kwargs: Any) -> Query:
         """
         Filter by named params, ex: User.q(name='Thuc', status=1)
         """
@@ -44,7 +55,8 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Get first by list of criterion.
         """
-        return self.q(*criterion, db=db).first()
+        result = self.q(*criterion, db=db).first()
+        return cast(Optional[ModelType], result)
 
     def first_or_error(self, db: Session, *criterion: Any) -> ModelType:
         """
@@ -59,7 +71,8 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Get all records by list of criterion.
         """
-        return self.q(*criterion, db=db).all()
+        result = self.q(*criterion, db=db).all()
+        return cast(List[ModelType], result)
 
     def get(self, id: Any, db: Session, error_out: bool = False) -> Optional[ModelType]:
         """
@@ -92,9 +105,10 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Read multiple records with pagination.
         """
-        return (
+        result = (
             db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
         )
+        return cast(List[ModelType], result)
 
     def update(
         self,
