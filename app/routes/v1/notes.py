@@ -41,8 +41,11 @@ async def search(
 
 
 @router.get("/show/{id}", response_model=NoteDetailSchema)
-async def show(id: str):
-    notes = controllers.notes.get(id=id, error_out=True)
+async def show(
+    id: str,
+    db: Session = Depends(get_db),
+):
+    notes = controllers.notes.get(id=id, db=db, error_out=True)
     return {"data": notes}
 
 
