@@ -9,7 +9,9 @@ class AppBaseException(Exception):
         self.message = message
 
 
-async def base_exception_handler(request: Request, exc: AppBaseException):
+async def base_exception_handler(
+    request: Request, exc: AppBaseException
+) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
         content={"code": exc.code, "success": False, "message": exc.message},
