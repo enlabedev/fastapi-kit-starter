@@ -6,7 +6,7 @@ authors = ["Enrique Lazo Bello <enlabe@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.12"
 fastapi = {extras = ["all"], version = "^0.115.12"}
 sqlalchemy = "^2.0.39"
 alembic = "^1.15.1"
@@ -16,11 +16,14 @@ pydantic-settings = "^2.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
-pysen = "^0.10.3"
-isort = "^5.12.0"
-flake8 = "^6.0.0"
-black = "^23.1.0"
+pysen = "^0.11.0"
+isort = "^6.0.1"
+flake8 = "^7.2.0"
+black = "^25.1.0"
 pre-commit = "^4.2.0"
+mypy = "^1.15.0"
+bandit = "^1.8.3"
+autopep8 = "^2.3.2"
 
 [build-system]
 requires = ["poetry-core"]
@@ -28,7 +31,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool]
 [tool.black]
-line-length = 100
+line-length = 88
+target-version = ['py312']
 
 [tool.isort]
 default_section = "THIRDPARTY"
@@ -36,7 +40,7 @@ ensure_newline_before_comments = true
 force_grid_wrap = 0
 force_single_line = false
 include_trailing_comma = true
-line_length = 100
+line_length = 88
 multi_line_output = 3
 use_parentheses = true
 
@@ -46,7 +50,17 @@ enable_flake8 = true
 enable_isort = true
 enable_mypy = false
 mypy_preset = "strict"
-line_length = 100
+line_length = 88
+
+[tool.autopep8]
+max-line-length = 88
+verbose = true
+exclude = ".venv"
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+tests = ["B201", "B301"]
+skips = ["B101", "B601"]
 
 [[tool.pysen.lint.mypy_targets]]
     paths = ["app", "tests"]
