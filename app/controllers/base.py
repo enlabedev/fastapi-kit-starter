@@ -1,14 +1,18 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, Protocol, Type, TypeVar, Union
 
-from app.config.database import SessionLocal
-from app.models.base import Base
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-ModelType = TypeVar("ModelType", bound=Base)
+
+# Protocol to enforce the presence of an `id` attribute
+class Identifiable(Protocol):
+    id: Any
+
+
+ModelType = TypeVar("ModelType", bound=Identifiable)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
@@ -19,69 +23,60 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
         **Parameters**
         * `model`: A SQLAlchemy model class
-        * `schema`: A Pydantic model (schema) class
         """
         self.model = model
 
-    def q(self, *criterion, db: Session):
+    def q(self, *criterion: Any, db: Session) -> Any:
         """
         Filter by criterion, ex: User.q(User.name=='Thuc', User.status==1)
-        :param criterion:
-        :return:
         """
         if criterion:
             return db.query(self.model).filter(*criterion)
         return db.query(self.model)
 
-    def q_by(self, db: Session = SessionLocal(), **kwargs):
+    def q_by(self, db: Session, **kwargs: Any) -> Any:
         """
         Filter by named params, ex: User.q(name='Thuc', status=1)
-        :param kwargs:
-        :return:
         """
         return db.query(self.model).filter_by(**kwargs)
 
-    def first(self, *criterion):
+    def first(self, db: Session, *criterion: Any) -> Optional[ModelType]:
         """
-        Get first by list of criterion, ex: user1 = User.first(User.name=='Thuc1')
-        :param criterion:
-        :return:
+        Get first by list of criterion.
         """
-        return self.q(*criterion).first()
+        return self.q(*criterion, db=db).first()
 
-    def first_or_error(self, *criterion):
+    def first_or_error(self, db: Session, *criterion: Any) -> ModelType:
         """
-        Get first by list of criterion, ex: user1 = User.first(User.name=='Thuc1')
-        if according to where condition no data match than it gives not found page
-        :param criterion:
-        :return:
+        Get first by list of criterion or raise 404 error.
         """
-        response = self.first(*criterion)
+        response = self.first(db, *criterion)
         if not response:
             raise HTTPException(status_code=404, detail="Item not found")
         return response
 
-    def all(self, *criterion):
+    def all(self, db: Session, *criterion: Any) -> List[ModelType]:
         """
-        Get all of the records by list of criterion, ex: user1 = User.first(User.name=='Thuc1')
-        if according to where condition no data match than it gives not found page
-        :param criterion:
-        :return:
+        Get all records by list of criterion.
         """
-        return self.q(*criterion).all()
+        return self.q(*criterion, db=db).all()
 
-    def get(
-        self, id: Any, db: Session = SessionLocal(), error_out: bool = False
-    ) -> Optional[ModelType]:
+    def get(self, id: Any, db: Session, error_out: bool = False) -> Optional[ModelType]:
+        """
+        Get a single record by ID.
+        """
         obj = db.query(self.model).filter(self.model.id == id).first()
         if not obj and error_out:
             raise HTTPException(status_code=404, detail="Item not found")
         return obj
 
     def create(self, db: Session, *, schema: CreateSchemaType) -> ModelType:
+        """
+        Create a new record.
+        """
         try:
             item_data = jsonable_encoder(schema)
-            model = self.model(**item_data)
+            model = self.model(**item_data)  # type: ignore
             db.add(model)
             db.commit()
             db.refresh(model)
@@ -94,17 +89,23 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             )
 
     def read(self, db: Session, *, skip: int = 0, limit: int = 5000) -> List[ModelType]:
+        """
+        Read multiple records with pagination.
+        """
         return (
             db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
         )
 
     def update(
         self,
-        db: Session = SessionLocal(),
+        db: Session,
         *,
         model: ModelType,
         schema: Union[UpdateSchemaType, Dict[str, Any]],
     ) -> ModelType:
+        """
+        Update an existing record.
+        """
         item_data = jsonable_encoder(model)
         if isinstance(schema, dict):
             update_data = schema
@@ -118,8 +119,13 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         db.refresh(model)
         return model
 
-    def delete(self, db: Session = SessionLocal(), *, id: str) -> ModelType:
+    def delete(self, db: Session, *, id: Any) -> ModelType:
+        """
+        Delete a record by ID.
+        """
         obj = db.query(self.model).filter(self.model.id == id).first()
+        if not obj:
+            raise HTTPException(status_code=404, detail="Item not found")
         db.delete(obj)
         db.commit()
         return obj
