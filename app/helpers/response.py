@@ -1,6 +1,6 @@
 class ResponseHelper:
     @staticmethod
-    def pagination_meta(page, page_size, total_items):
+    def pagination_meta(page: int, page_size: int, total_items: int) -> dict:
         """
         Pagination for creating metadata
         """
