@@ -17,8 +17,8 @@ router = APIRouter()
 
 
 @router.get("", response_model=NoteListSchema)
-async def get(page: int = 0, pageSize: int = 10):
-    notes = controllers.notes.read()
+async def get(page: int = 0, pageSize: int = 10, db: Session = Depends(get_db)):
+    notes = controllers.notes.read(db=db, skip=page, limit=pageSize)
     totalItems = len(notes)
     return {
         "data": notes,
@@ -27,10 +27,12 @@ async def get(page: int = 0, pageSize: int = 10):
 
 
 @router.get("/search/{text}", response_model=NoteListSchema)
-async def search(text: str = "", page: int = 0, pageSize: int = 10):
-    _query = controllers.notes.q()
+async def search(
+    text: str = "", page: int = 0, pageSize: int = 10, db: Session = Depends(get_db)
+):
+    _query = controllers.notes.q(db=db)
     if text:
-        _query = _query.filter(Notes.title == text)
+        _query = _query.filter(Notes.title.ilike(f"%{text}%"))
     notes = _query.order_by(Notes.id.asc()).all()
     totalItems = len(notes)
     return {
@@ -46,14 +48,14 @@ async def show(id: str):
 
 
 @router.post("", response_model=NoteDetailSchema)
-async def create(*, notes: NoteSchemaCreate):
+async def create(*, notes: NoteSchemaCreate, db: Session = Depends(get_db)):
     notes = Notes(
         title=notes.title,
         content=notes.content,
         category=notes.category,
         published=notes.published,
     )
-    note = controllers.notes.create(schema=notes)
+    note = controllers.notes.create(schema=notes, db=db)
     return {"data": note}
 
 

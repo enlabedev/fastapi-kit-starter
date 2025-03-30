@@ -22,7 +22,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
-    def q(self, *criterion, db: Session = SessionLocal()):
+    def q(self, *criterion, db: Session):
         """
         Filter by criterion, ex: User.q(User.name=='Thuc', User.status==1)
         :param criterion:
@@ -77,9 +77,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             raise HTTPException(status_code=404, detail="Item not found")
         return obj
 
-    def create(
-        self, db: Session = SessionLocal(), *, schema: CreateSchemaType
-    ) -> ModelType:
+    def create(self, db: Session, *, schema: CreateSchemaType) -> ModelType:
         try:
             item_data = jsonable_encoder(schema)
             model = self.model(**item_data)
@@ -94,9 +92,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
             )
 
-    def read(
-        self, db: Session = SessionLocal(), *, skip: int = 0, limit: int = 5000
-    ) -> List[ModelType]:
+    def read(self, db: Session, *, skip: int = 0, limit: int = 5000) -> List[ModelType]:
         return (
             db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
         )
