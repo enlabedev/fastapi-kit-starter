@@ -29,8 +29,8 @@ class DataResponse(ResponseSchemaBase, Generic[T]):
         self.message = message
         return self
 
-    def success(self, data: T) -> "DataResponse":
-        self.code = 0  # Changed to an integer to match the type of `code`
+    def set_success(self, data: T) -> "DataResponse":
+        self.code = 0
         self.data = data
-        self.success = True  # Ensure `success` is updated correctly
+        self.success = True
         return self
