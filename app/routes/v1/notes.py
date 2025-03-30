@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 from app import controllers
 from app.config.database import get_db
 from app.helpers.response import ResponseHelper
@@ -11,7 +13,6 @@ from app.schemas.notes import (
 )
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import Any, Dict
 
 router = APIRouter()
 

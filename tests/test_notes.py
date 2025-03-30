@@ -25,16 +25,12 @@ class TestNotes:
         )
 
     def create_note_via_api(self) -> Dict[str, Any]:
-        """
-        Helper para crear una nota usando la API POST y devolver los datos de la respuesta.
-        Asegúrate que el payload coincida con tu schema NoteSchemaCreate.
-        """
         payload = jsonable_encoder(self.notes)
         response = client.post("/api/v1/notes", json=payload)
-        assert response.status_code == 200, (
-            f"Error al crear nota para test: {response.text}"
-        )
-        return response.json()
+        assert (
+            response.status_code == 200
+        ), f"Error al crear nota para test: {response.text}"
+        return response.json()  # Ensure response.json() returns Dict[str, Any]
 
     def test_create_note(self) -> None:
         data = self.create_note_via_api()

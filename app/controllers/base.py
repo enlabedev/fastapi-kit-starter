@@ -15,7 +15,7 @@ from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import Session, Query
+from sqlalchemy.orm import Query, Session
 
 
 # Protocol to enforce the presence of an `id` attribute
@@ -71,8 +71,7 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         Get all records by list of criterion.
         """
-        result = self.q(*criterion, db=db).all()
-        return cast(List[ModelType], result)
+        return self.q(*criterion, db=db).all()
 
     def get(self, id: Any, db: Session, error_out: bool = False) -> Optional[ModelType]:
         """

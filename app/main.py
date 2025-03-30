@@ -1,9 +1,10 @@
 import uvicorn
 from app.config.settings import settings
 from app.routes.api import router
-from app.utils.exception import AppBaseException, base_exception_handler
+from app.utils.exception import AppBaseException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -16,6 +17,15 @@ app.add_middleware(
 )
 
 app.include_router(router, prefix=settings.API_PREFIX)
+
+
+async def base_exception_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+    )
+
+
 app.add_exception_handler(AppBaseException, base_exception_handler)
 
 
