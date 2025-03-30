@@ -2,14 +2,10 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.config.database import engine
-from app.models.base import Base
 from app.config.settings import settings
 from app.routes.api import router
 from app.utils.exception import AppBaseException, base_exception_handler
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
