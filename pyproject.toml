@@ -17,13 +17,13 @@ pydantic-settings = "^2.8.1"
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
 pysen = "^0.11.0"
-isort = "^6.0.1"
-flake8 = "^7.2.0"
-black = "^25.1.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
+black = "^23.3.0"
 pre-commit = "^4.2.0"
-mypy = "^1.15.0"
+mypy = "^1.4.1"
 bandit = "^1.8.3"
-autopep8 = "^2.3.2"
+autopep8 = "^2.1.0"
 
 [build-system]
 requires = ["poetry-core"]
@@ -33,6 +33,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.black]
 line-length = 88
 target-version = ['py312']
+exclude = ".venv/"
 
 [tool.isort]
 default_section = "THIRDPARTY"
@@ -44,26 +45,42 @@ line_length = 88
 multi_line_output = 3
 use_parentheses = true
 
+[tool.flake8]
+ignore = "E203 E266 E501 W503 F403 F401"
+max-line-length = 88
+max-complexity = 18
+select = "B,C,E,F,W,T4,B9"
+verbose = true
+exclude = ".venv"
+
+[tool.pysen]
+version = "0.11"
+
+[tool.pysen.lint.source]
+  includes = ["app", "tests"]
+
+
 [tool.pysen.lint]
 enable_black = true
 enable_flake8 = true
 enable_isort = true
-enable_mypy = false
+enable_mypy = true
 mypy_preset = "strict"
 line_length = 88
+py_version = "py312"
+
+[tool.mypy]
+exclude = [".venv/"]
+
+[[tool.pysen.lint.mypy_targets]]
+    paths = ["app", "tests"]
 
 [tool.autopep8]
 max-line-length = 88
 verbose = true
-exclude = ".venv"
+exclude = ".venv/"
 
 [tool.bandit]
 exclude_dirs = ["tests", ".venv"]
 tests = ["B201", "B301"]
 skips = ["B101", "B601"]
-
-[[tool.pysen.lint.mypy_targets]]
-    paths = ["app", "tests"]
-
-[tool.poetry.scripts]
-start = "app.main:start"

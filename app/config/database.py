@@ -1,8 +1,8 @@
 from typing import Generator
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
-from app.config.settings import settings
 
+from app.config.settings import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, sessionmaker
 
 SQLITE_URL = settings.SQLITE_URL
 

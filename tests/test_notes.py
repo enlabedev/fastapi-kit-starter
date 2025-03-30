@@ -1,8 +1,9 @@
 import uuid
-from fastapi.testclient import TestClient
-from fastapi.encoders import jsonable_encoder
-from app.schemas.notes import NoteBaseSchema
+
 from app.main import app
+from app.schemas.notes import NoteBaseSchema
+from fastapi.encoders import jsonable_encoder
+from fastapi.testclient import TestClient
 
 client = TestClient(app)
 
@@ -29,9 +30,9 @@ class TestNotes:
         """
         payload = jsonable_encoder(self.notes)
         response = client.post("/api/v1/notes", json=payload)
-        assert response.status_code == 200, (
-            f"Error al crear nota para test: {response.text}"
-        )
+        assert (
+            response.status_code == 200
+        ), f"Error al crear nota para test: {response.text}"
         return response.json()
 
     def test_create_note(self):

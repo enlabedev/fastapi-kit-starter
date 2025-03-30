@@ -1,7 +1,8 @@
-from sqlalchemy.orm import declarative_base, declared_attr
-from sqlalchemy import TIMESTAMP, Column, String
-from sqlalchemy.sql import func
 from uuid import uuid4
+
+from sqlalchemy import TIMESTAMP, Column, String
+from sqlalchemy.orm import declarative_base, declared_attr
+from sqlalchemy.sql import func
 
 
 class Base:

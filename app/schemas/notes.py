@@ -1,9 +1,10 @@
-from uuid import UUID
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict
-from app.schemas.base import ResponseSchemaBase, MetadataSchema
+from uuid import UUID
+
 from app.helpers.enum import NoteCategory
+from app.schemas.base import MetadataSchema, ResponseSchemaBase
+from pydantic import BaseModel, ConfigDict
 
 
 class NoteBaseSchema(BaseModel):

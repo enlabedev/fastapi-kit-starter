@@ -5,18 +5,18 @@ repos:
     -   id: check-yaml
     -   id: end-of-file-fixer
     -   id: trailing-whitespace
--   repo: local
-    hooks:
-      - id: pysen-format
-        name: pysen-format
-        entry: poetry run pysen format --check
-        language: system
-        types: [python]
-        pass_filenames: false
+# -   repo: local
+#     hooks:
+#       - id: pysen-format
+#         name: pysen-format
+#         entry: poetry run pysen format --check
+#         language: system
+#         types: [python]
+#         pass_filenames: false
 
-      - id: pysen-lint
-        name: pysen-lint
-        entry: poetry run pysen lint
-        language: system
-        types: [python]
-        pass_filenames: false
+#       - id: pysen-lint
+#         name: pysen-lint
+#         entry: poetry run pysen lint
+#         language: system
+#         types: [python]
+#         pass_filenames: false

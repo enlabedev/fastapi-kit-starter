@@ -1,5 +1,5 @@
 from app.models.base import BareBaseModel
-from sqlalchemy import Column, String, Boolean, Text
+from sqlalchemy import Boolean, Column, String, Text
 
 
 class Notes(BareBaseModel):

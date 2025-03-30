@@ -1,11 +1,12 @@
-from typing import Any, Dict, Generic, List, Type, TypeVar, Union, Optional
-from pydantic import BaseModel
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union
+
+from app.config.database import SessionLocal
+from app.models.base import Base
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from pydantic import BaseModel
 from sqlalchemy.exc import IntegrityError
-from app.models.base import Base
-from app.config.database import SessionLocal
+from sqlalchemy.orm import Session
 
 ModelType = TypeVar("ModelType", bound=Base)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
