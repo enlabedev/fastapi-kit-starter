@@ -1,10 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
-
 from app.helpers.enum import NoteCategory
 from app.schemas.base import MetadataSchema, ResponseSchemaBase
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NoteBaseSchema(BaseModel):
