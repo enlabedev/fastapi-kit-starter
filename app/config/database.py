@@ -1,8 +1,9 @@
 from typing import Generator
 
-from app.config.settings import settings
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+
+from app.config.settings import settings
 
 SQLITE_URL = settings.SQLITE_URL
 
@@ -16,4 +17,5 @@ def get_db() -> Generator[Session, None, None]:
     try:
         yield db
     finally:
+        db.close()
         db.close()

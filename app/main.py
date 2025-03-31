@@ -1,10 +1,11 @@
 import uvicorn
-from app.config.settings import settings
-from app.routes.api import router
-from app.utils.exception import AppBaseException
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
+from app.config.settings import settings
+from app.routes.api import router
+from app.utils.exception import AppBaseException
 
 app = FastAPI()
 
@@ -41,4 +42,4 @@ def root() -> dict:
 
 def start() -> None:
     """Launched with `poetry run start` at root level"""
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True)
