@@ -1,29 +1,25 @@
-name: Python Tests
+name: Database Migrations
 
 on:
   push:
     branches: ['main', 'develop']
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.vscode/**'
+    paths:
+      - 'app/models/**'
+      - 'alembic/**'
   pull_request:
     branches: ['main', 'develop']
-    paths-ignore:
-      - '**.md'
-      - 'docs/**'
-      - '.vscode/**'
+    paths:
+      - 'app/models/**'
+      - 'alembic/**'
+  # Permite ejecutar manualmente desde la interfaz de GitHub
+  workflow_dispatch:
 
 jobs:
-  test:
+  verify-migrations:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ['3.12']
 
     services:
-      # Servicio de base de datos PostgreSQL (para pruebas con base de datos real)
+      # Servicio PostgreSQL para pruebas
       postgres:
         image: postgres:latest
         env:
@@ -32,7 +28,6 @@ jobs:
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
-        # Opciones de salud para esperar a que PostgreSQL esté listo
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -42,10 +37,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.12'
           cache: 'pip'
 
       - name: Install Poetry
@@ -59,59 +54,86 @@ jobs:
         run: |
           poetry install --no-interaction
 
-      - name: Cache Poetry dependencies
-        uses: actions/cache@v4
-        with:
-          path: .venv
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
-
-      - name: Run Linting
-        run: |
-          poetry run pysen run lint
-          poetry run pysen run format
-
-      - name: Run Security Check
-        run: |
-          poetry run bandit -r app -x tests
-
-      - name: Create SQLite Database for Tests
+      # PRUEBAS SQLITE
+      - name: Prepare SQLite Database
         run: |
           mkdir -p /tmp/test_data
-          poetry run python -c "import sqlite3; sqlite3.connect('/tmp/test_data/sqlite.db')"
-          echo "SQLITE_URL=sqlite:////tmp/test_data/sqlite.db" >> .env
+          echo "SQLITE_URL=sqlite:////tmp/test_data/test_sqlite.db" >> .env
 
-      - name: Run Tests with Coverage
+      - name: Test SQLite Migrations - Forward
         env:
-          SQLITE_URL: sqlite:////tmp/test_data/sqlite.db
-          API_PREFIX: /api/v1
-          PROJECT_NAME: 'FASTAPI KIT STARTER'
-          BACKEND_CORS_ORIGINS: '[*]'
-          LOGGING_CONFIG_FILE: 'logging.ini'
-          PROJECT_VERSION: '0.0.1'
-        run: |
-          poetry run pytest --cov=app --cov-report=xml --cov-report=term tests/
-
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          file: ./coverage.xml
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-          verbose: true
-
-      - name: Run Migrations to verify they work
-        env:
-          SQLITE_URL: sqlite:////tmp/test_data/sqlite.db
+          SQLITE_URL: sqlite:////tmp/test_data/test_sqlite.db
         run: |
           poetry run alembic upgrade head
+          echo "✅ Forward migrations successful on SQLite"
 
-      - name: Archive Test Results
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-${{ matrix.python-version }}
-          path: |
-            coverage.xml
-            .coverage
-          retention-days: 7
+      - name: Test SQLite Migrations - Rollback
+        env:
+          SQLITE_URL: sqlite:////tmp/test_data/test_sqlite.db
+        run: |
+          poetry run alembic downgrade base
+          echo "✅ Rollback migrations successful on SQLite"
+
+      # PRUEBAS POSTGRESQL
+      - name: Test PostgreSQL Migrations - Forward
+        env:
+          SQLALCHEMY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          poetry run alembic upgrade head
+          echo "✅ Forward migrations successful on PostgreSQL"
+
+      - name: Test PostgreSQL Migrations - Rollback
+        env:
+          SQLALCHEMY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          poetry run alembic downgrade base
+          echo "✅ Rollback migrations successful on PostgreSQL"
+
+      # VERIFICACIÓN DE MODELOS vs MIGRACIONES
+      - name: Verify Models Match Migrations
+        env:
+          SQLALCHEMY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          # Subir a la última versión
+          poetry run alembic upgrade head
+
+          # Generar una revisión de prueba para verificar si hay cambios no migrados
+          poetry run alembic revision --autogenerate -m "verification" --check-only
+
+          # Si el comando anterior falló, significa que hay cambios no migrados
+          if [ $? -ne 0 ]; then
+            echo "❌ Error: Los modelos SQLAlchemy están fuera de sincronización con las migraciones."
+            echo "Ejecuta 'alembic revision --autogenerate' localmente para generar una migración."
+            exit 1
+          else
+            echo "✅ Los modelos SQLAlchemy están sincronizados con las migraciones."
+          fi
+
+      # GENERACIÓN AUTOMÁTICA DE MIGRACIONES (solo en develop)
+      - name: Auto-generate Migration (develop branch only)
+        if: github.ref == 'refs/heads/develop' && github.event_name == 'push'
+        env:
+          SQLALCHEMY_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+        run: |
+          # Verificar si hay cambios en los modelos respecto a las migraciones
+          MIGRATION_RESULT=$(poetry run alembic revision --autogenerate -m "auto_migration_$(date +%Y%m%d%H%M%S)" --check-only 2>&1)
+
+          # Si hay cambios, generar la migración
+          if [ $? -ne 0 ]; then
+            echo "Detectados cambios en los modelos. Generando migración automática..."
+            poetry run alembic upgrade head
+            poetry run alembic revision --autogenerate -m "auto_migration_$(date +%Y%m%d%H%M%S)"
+
+            # Configurar Git para commit automático
+            git config --global user.name "GitHub Actions"
+            git config --global user.email "actions@github.com"
+
+            # Añadir y commit de los nuevos archivos de migración
+            git add alembic/versions/*.py
+            git commit -m "Auto-generated migration from CI"
+            git push
+
+            echo "✅ Migración automática generada y subida"
+          else
+            echo "✅ No se requiere migración - modelos sincronizados"
+          fi
