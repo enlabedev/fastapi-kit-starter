@@ -86,8 +86,8 @@ jobs:
           echo "::group::Debug Database Path"
           ls -la /tmp/test_data/
 
-          echo "::group::Forward Migrations (Verbose)"
-          poetry run alembic upgrade head --verbose
+          echo "::group::Forward Migrations"
+          poetry run alembic upgrade head
 
           echo "::group::Verify Database Structure"
           poetry run python -c "import sqlite3; conn = sqlite3.connect('/tmp/test_data/sqlite.db'); print(conn.execute('SELECT name FROM sqlite_master WHERE type=\"table\";').fetchall())"
