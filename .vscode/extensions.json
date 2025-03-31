@@ -1,21 +1,69 @@
 {
-    "recommendations": [
-        "ms-python.python",
-        "KevinRose.vsc-python-indent",
-        "ms-python.vscode-pylance",
-        "njpwerner.autodocstring",
-        "streetsidesoftware.code-spell-checker",
-        "streetsidesoftware.code-spell-checker-spanish",
-        "hbenl.vscode-test-explorer",
-        "LittleFoxTeam.vscode-python-test-adapter",
-        "christian-kohler.path-intellisense",
-        "esbenp.prettier-vscode",
-        "eamodio.gitlens",
-        "ms-azuretools.vscode-docker",
-        "mikestead.dotenv",
-        "mtxr.sqltools",
-        "aaron-bond.better-comments",
-        "PKief.material-icon-theme",
-        "formulahendry.auto-rename-tag"
-    ]
+  "recommendations": [
+    // Extensiones de Python esenciales
+    "ms-python.python", // Soporte básico de Python
+    "ms-python.vscode-pylance", // Servidor de lenguaje Python mejorado
+    "ms-python.black-formatter", // Black formatter (separado ahora)
+    "ms-python.flake8", // Flake8 linter (separado ahora)
+    "ms-python.isort", // isort para organizar imports (separado ahora)
+    "ms-python.mypy-type-checker", // mypy para verificación de tipos (separado ahora)
+    "ms-python.autopep8", // autopep8 para formateo de código (separado ahora)
+    "charliermarsh.ruff", // Ruff para linting y formateo (separado ahora)
+    "nwgh.bandit", // Bandit para seguridad de código (separado ahora)
+
+    // Pruebas y cobertura
+    "ms-python.debugpy", // Depurador Python
+    "hbenl.vscode-test-explorer", // Explorador de pruebas
+    "LittleFoxTeam.vscode-python-test-adapter", // Adaptador de pruebas para Python
+    "ryanluker.vscode-coverage-gutters", // Visualizador de cobertura de código
+
+    // Documentación
+    "njpwerner.autodocstring", // Generación automática de docstrings
+
+    // Ortografía y terminología
+    "streetsidesoftware.code-spell-checker", // Revisor de ortografía
+    "streetsidesoftware.code-spell-checker-spanish", // Revisor de ortografía en español
+
+    // Herramientas de productividad
+    "christian-kohler.path-intellisense", // Autocompletado de rutas de archivos
+    "GitHub.copilot", //
+    "yzhang.markdown-all-in-one", // Soporte avanzado para Markdown
+    "tamasfe.even-better-toml", // Soporte avanzado para TOML
+
+    // Integración con Git
+    "eamodio.gitlens", // Funcionalidades Git avanzadas
+    "donjayamanne.githistory", // Visualización de historial de Git
+    "mhutchie.git-graph", // Gráfico visual de Git
+
+    // FastAPI específico
+    "humao.rest-client", // Cliente para pruebas de API REST
+
+    // Docker y herramientas de despliegue
+    "ms-azuretools.vscode-docker", // Integración con Docker
+    "ms-kubernetes-tools.vscode-kubernetes-tools", // Soporte para Kubernetes
+
+    // Temas y mejoras visuales
+    "PKief.material-icon-theme", // Íconos de Material Design
+    "oderwat.indent-rainbow", // Colorización de indentación
+    "usernamehw.errorlens", // Errores y advertencias inline
+    "aaron-bond.better-comments", // Comentarios mejorados
+
+    // Formateo y organización de código
+    "esbenp.prettier-vscode", // Prettier para formateo
+    "formulahendry.auto-rename-tag", // Renombrado automático de etiquetas HTML
+    "formulahendry.auto-close-tag", // Cierre automático de etiquetas HTML
+
+    // Entorno y configuración
+    "mikestead.dotenv", // Soporte para archivos .env
+    "redhat.vscode-yaml", // Soporte avanzado YAML
+    "ms-vscode-remote.remote-containers", // Desarrollo en contenedores
+    "ms-vscode-remote.remote-ssh", // Desarrollo remoto vía SSH
+
+    // Editor y productividad
+    "wayou.vscode-todo-highlight", // Resaltar TODOs
+    "gruntfuggly.todo-tree", // Árbol de TODOs
+    "alefragnani.bookmarks", // Marcadores en el código
+    "alefragnani.project-manager", // Gestor de proyectos
+    "vscode-icons-team.vscode-icons" // Iconos para VS Code
+  ]
 }

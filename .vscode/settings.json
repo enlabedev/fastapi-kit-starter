@@ -1,196 +1,205 @@
 {
-	"files.insertFinalNewline": true,
-	"files.trimFinalNewlines": true,
-	"files.trimTrailingWhitespace": true,
-	"editor.fontSize": 12,
+  // Editor general
+  "editor.fontSize": 12,
+  "editor.linkedEditing": true,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": true,
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "editor.rulers": [88],
+  "editor.snippetSuggestions": "top",
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.suggestSelection": "first",
+  "editor.tabCompletion": "on",
+  "editor.wordBasedSuggestions": "matchingDocuments",
+  "editor.stickyScroll.enabled": true,
 
-	"python.defaultInterpreterPath": "./.venv/bin/python",
-	"python.linting.enabled": true,
-	"python.linting.lintOnSave": true,
-	"python.testing.promptToConfigure": false,
-	"python.linting.pylintEnabled": false,
-	"python.linting.flake8Enabled": true,
-	"python.linting.flake8Path": "./.venv/bin/flake8",
-	"python.linting.flake8Args": [
-		"--max-line-length=100",
-		"--verbose"
-	],
-	"python.formatting.provider": "black",
-	"python.formatting.blackPath": "./.venv/bin/black",
-	"isort.path":[
-		"./.env/python",
-		"-m",
-		"isort"
-	],
-	"python.analysis.logLevel": "Trace",
-	"python.analysis.typeCheckingMode": "off",
-	"python.languageServer": "Pylance",
+  // Terminal
+  "terminal.integrated.defaultProfile.linux": "bash",
+  "terminal.integrated.defaultProfile.osx": "zsh",
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.persistentSessionReviveProcess": "never",
+  "terminal.integrated.tabs.enabled": true,
 
-	"[python]": {
-		"editor.defaultFormatter": "ms-python.python",
-		"editor.rulers": [80, 100],
-		"editor.detectIndentation": false,
-		"editor.insertSpaces": true,
-		"editor.tabSize": 4,
-		"editor.formatOnSave": true,
-		"editor.formatOnPaste": false,
-		"editor.formatOnSaveMode": "file"
-	},
+  // Archivos generales
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "files.eol": "\n",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "explorer.autoReveal": true,
+  "explorer.compactFolders": false,
 
-	"[dockercompose]": {
-		"editor.detectIndentation": false,
-		"editor.insertSpaces": true,
-		"editor.tabSize": 2
-	},
+  // Python
+  "python.defaultInterpreterPath": ".\\.venv\\Scripts\\python.exe",
+  "python.terminal.activateEnvironment": true,
 
-	"typescript.preferences.quoteStyle": "single",
-	"typescript.tsdk": "./node_modules/typescript/lib",
-	"typescript.preferences.importModuleSpecifier": "relative",
-	"[typescript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.formatOnSave": true,
-        "editor.tabSize": 2
-	},
+  // Python - Analysis
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.completeFunctionParens": true,
+  "python.analysis.extraPaths": [],
+  "python.analysis.indexing": true,
+  "python.analysis.inlayHints.functionReturnTypes": true,
+  "python.analysis.inlayHints.variableTypes": true,
+  "python.analysis.typeCheckingMode": "basic",
+  "python.languageServer": "Pylance",
 
-	"javascript.preferences.quoteStyle": "single",
-	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.formatOnSave": true,
-        "editor.tabSize": 2
-	},
+  // Python - Testing
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": ["tests"],
 
-	"[json]": {
-	    "editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.formatOnSave": true,
-		"editor.tabSize": 2
-	},
+  "black-formatter.args": ["--line-length=88"],
+  "black-formatter.path": [".\\.venv\\Scripts\\black.exe"],
+  "flake8.args": [
+    "--max-line-length=88",
+    "--ignore=E203,E266,E501,W503,F403,F401",
+    "--exclude=.venv",
+    "--max-complexity=18",
+    "--select=B,C,E,F,W,T4,B9",
+    "--verbose"
+  ],
+  "flake8.path": [".\\.venv\\Scripts\\flake8.exe"],
 
-	"[YAML]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode",
-		"editor.formatOnSave": true
-	},
+  // Python - Sort imports
+  "isort.args": ["--profile=black"],
+  "isort.path": [".\\.venv\\Scripts\\isort.exe"],
 
-	"files.exclude": {
-		"**/.venv**": true,
-		"**/venv**": true,
-		"**/__pycache__": true,
-		"out": true,
-		"dist": true,
-		"**/*.pyc": true,
-		".nyc_output": true,
-		"obj": true,
-		"bin": true,
-		"**/node_modules": true,
-		".vscode-test": false,
-		".vscode test": false,
-		"**/.mypy_cache/**": true,
-		"**/.pytest_cache/**": true,
-		"**\/CVS": true,
-    	"**\/.DS_Store": true,
-    	"**\/.hg": true,
-    	"**\/.svn": true,
-    	"**\/.git": true,
-    	"node_modules": true
-	},
+  "autopep8.args": ["--max-line-length=88", "--exclude=.venv", "--verbose"],
+  "autopep8.path": [".\\.venv\\Scripts\\autopep8.exe"],
+  "bandit.args": [
+    "--recursive",
+    "--format=json",
+    "--verbose",
+    "--exclude=.venv,tests,tests*.py,tests/**,test*.py,tests/**,docs,docs/**,examples,examples/**,build,build/**,dist,dist/**,venv,venv/**,env,env",
+    "--skip=B101,B201,B301,B601",
+    "--configfile=pyproject.toml"
+  ],
+  "bandit.path": [".\\.venv\\Scripts\\bandit.exe"],
 
-	"search.exclude": {
-		"**/.venv**": true,
-		"**/venv**": true,
-		"**/__pycache__": true,
-		"out": true,
-		"dist": true,
-		"**/node_modules": true,
-		"coverage": true,
-		"languageServer*/**": true,
-		".vscode-test": true,
-		".vscode test": true,
-		"**/.pytest_cache/**": true,
-		"**\/CVS": true,
-    	"**\/.DS_Store": true,
-    	"**\/.hg": true,
-    	"**\/.svn": true,
-    	"**\/.git": true,
-    	"node_modules": true
-	},
-	"prettier.printWidth": 100,
-	"prettier.singleQuote": true,
-	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": true
-	},
-	"python.testing.pytestArgs": [
-		"tests"
-	],
-	"python.testing.pytestEnabled": true,
-	"python.envFile": "${workspaceFolder}/.env",
-	"material-icon-theme.languages.associations": {
-		"dotenv": "tune"
-	},
-	"material-icon-theme.files.associations": {
-		"tsconfig.json": "tune",
-		"*.webpack.js": "webpack",
-		"*.proto": "3d",
-		"ormconfig.json": "database"
-	},
-	"material-icon-theme.activeIconPack": "nest",
-	"material-icon-theme.folders.associations": {
-		"adapters": "contract",
-		"grpc": "pipe",
-		"kube": "kubernetes",
-		"main": "lib",
-		"websockets": "pipe",
-		"implementations": "core",
-		"protos": "pipe",
-		"entities": "class",
-		"kafka": "pipe",
-		"use-cases": "functions",
-		"migrations": "tools",
-		"schemas": "class",
-		"useCases": "functions",
-		"eslint-config": "tools",
-		"typeorm": "database",
-		"_shared": "shared",
-		"mappers": "meta",
-		"fakes": "mock",
-		"modules": "components",
-		"subscribers": "messages",
-		"domain": "class",
-		"protocols": "contract",
-		"infra": "app",
-		"view-models": "views",
-		"presentation": "template",
-		"dtos": "typescript",
-		"http": "container",
-		"providers": "include",
-		"factories": "class",
-		"repositories": "mappings"
-	},
-	"explorer.compactFolders": false,
-	"git.enableSmartCommit": true,
-	"breadcrumbs.enabled": true,
-	"auto-rename-tag.activationOnLanguage": ["*"],
-	"css.validate": true,
-	"editor.autoIndent": "none",
-	"editor.detectIndentation": false,
-	"editor.minimap.maxColumn": 100,
- 	"extensions.ignoreRecommendations": true,
-	"git.allowForcePush": true,
-	"git.allowNoVerifyCommit": true,
-	"git.autofetch": true,
-	"git.confirmSync": false,
-	"git.fetchOnPull": true,
-	"git.inputValidationSubjectLength": 72,
-	"git.mergeEditor": true,
-	"git.suggestSmartCommit": false,
-	"gitlens.blame.avatars": false,
-	"gitlens.blame.ignoreWhitespace": true,
-	"gitlens.codeLens.authors.enabled": false,
-	"gitlens.codeLens.enabled": false,
-	"gitlens.codeLens.recentChange.enabled": false,
-	"gitlens.codeLens.scopes": ["document", "containers", "blocks"],
-	"gitlens.hovers.annotations.changes": false,
-	"gitlens.hovers.annotations.enabled": false,
-	"gitlens.keymap": "alternate",
-	"gitlens.views.repositories.avatars": false,
-	"gitlens.views.repositories.files.layout": "list",
-    "explorer.confirmDragAndDrop": false,
+  // Editor configuraciones específicas
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    },
+    "editor.rulers": [88],
+    "editor.detectIndentation": false,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4
+  },
+
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.tabSize": 2
+  },
+
+  "[dockercompose]": {
+    "editor.tabSize": 2
+  },
+
+  // Prettier
+  "prettier.printWidth": 100,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+
+  // Git
+  "git.enableSmartCommit": true,
+  "git.confirmSync": false,
+  "git.autofetch": true,
+  "diffEditor.ignoreTrimWhitespace": false,
+  "git.mergeEditor": true,
+
+  // GitLens
+  "gitlens.codeLens.authors.enabled": false,
+  "gitlens.codeLens.enabled": false,
+  "gitlens.hovers.currentLine.over": "line",
+  "gitlens.hovers.enabled": true,
+  "gitlens.statusBar.enabled": true,
+
+  // Exclusiones de búsqueda y explorador de archivos
+  "files.exclude": {
+    "**/.venv**": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.coverage": true,
+    "**/*.pyc": true,
+    "**/.git": true,
+    "**/.DS_Store": true
+  },
+
+  "search.exclude": {
+    "**/.venv**": true,
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.coverage": true,
+    "**/*.pyc": true,
+    "**/.git": true,
+    "**/.DS_Store": true
+  },
+
+  // FastAPI específico
+  "fastapi.pythonPath": "./.venv/bin/python",
+
+  // Material Icons
+  "material-icon-theme.activeIconPack": "nest",
+  "material-icon-theme.folders.associations": {
+    "adapters": "contract",
+    "crud": "database",
+    "schemas": "models",
+    "models": "class",
+    "controllers": "controller",
+    "repositories": "database",
+    "migrations": "tools",
+    "domain": "class",
+    "config": "settings",
+    "helpers": "helper",
+    "routes": "routes",
+    "tests": "test"
+  },
+  "material-icon-theme.files.associations": {
+    "*.model.py": "database",
+    "*.schema.py": "models",
+    "*.repository.py": "database",
+    "*.controller.py": "controller",
+    "*.service.py": "settings",
+    "*.dto.py": "typescript",
+    "*.enum.py": "typescript",
+    "alembic.ini": "database"
+  },
+
+  // Rest Client (para probar APIs)
+  "rest-client.defaultHeaders": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "rest-client.enableTelemetry": false
 }

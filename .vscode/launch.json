@@ -1,0 +1,113 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Run Server",
+      "type": "python",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": ["app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
+      "jinja": true,
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "FastAPI: Current File",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "FastAPI: Debug Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-xvs", "${file}"],
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "FastAPI: Debug All Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-xvs", "tests/"],
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "FastAPI: Debug Test with Coverage",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["-xvs", "${file}", "--cov=app", "--cov-report=xml", "--cov-report=term"],
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Alembic: Run Migration",
+      "type": "python",
+      "request": "launch",
+      "module": "alembic",
+      "args": ["upgrade", "head"],
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "Alembic: Create Migration",
+      "type": "python",
+      "request": "launch",
+      "module": "alembic",
+      "args": ["revision", "--autogenerate", "-m", "${input:migrationMessage}"],
+      "justMyCode": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "FastAPI: Attach to Running Process",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}",
+          "remoteRoot": "."
+        }
+      ],
+      "justMyCode": false
+    }
+  ],
+  "inputs": [
+    {
+      "id": "migrationMessage",
+      "type": "promptString",
+      "description": "Descripción de la migración",
+      "default": "add new table"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Server + Database",
+      "configurations": ["Alembic: Run Migration", "FastAPI: Run Server"]
+    }
+  ]
+}
