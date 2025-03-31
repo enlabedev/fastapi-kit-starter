@@ -1,4 +1,4 @@
-name: Unified CI Pipeline
+name: CI
 
 on:
   push:
@@ -21,101 +21,137 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.12']
+        python-version: ['3.12'] # Puedes añadir más versiones si lo necesitas
+
+    # Definir variables de entorno a nivel de Job para que estén disponibles en todos los steps
+    # Esto es más limpio que definirlas en cada step que las necesita
+    env:
+      # Define la ruta de la BD SQLite una sola vez
+      # Usamos github.workspace para asegurarnos de que está dentro del área de trabajo si fuera necesario,
+      # aunque /tmp/ también funciona bien en los runners de GitHub. Mantendremos /tmp/ por ahora.
+      SQLITE_DB_PATH: /tmp/test_data/sqlite.db
+      SQLITE_URL: sqlite:////tmp/test_data/sqlite.db # URL completa para Alembic/SQLAlchemy
+      API_PREFIX: /api/v1
+      PROJECT_NAME: 'FASTAPI KIT STARTER'
+      BACKEND_CORS_ORIGINS: '[*]'
+      LOGGING_CONFIG_FILE: 'logging.ini'
+      PROJECT_VERSION: '0.0.1'
+      # Asegúrate de que Poetry use el virtualenv dentro del proyecto para que el caché funcione bien
+      POETRY_VIRTUALENVS_IN_PROJECT: true
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Necesario para SonarCloud
+          fetch-depth: 0 # Necesario para análisis de historial (como SonarCloud)
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'pip'
+          # No necesitas cache: 'pip' aquí si usas Poetry exclusivamente
 
       - name: Install Poetry
         uses: snok/install-poetry@v1
         with:
-          version: 1.8.2
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+          version: 1.8.2 # O la versión que uses
+          # virtualenvs-create y virtualenvs-in-project ya no son necesarios aquí si usas la variable de entorno POETRY_VIRTUALENVS_IN_PROJECT
 
-      - name: Install dependencies
-        run: |
-          poetry install --no-interaction
-
-      - name: Cache Poetry dependencies
+      # --- CACHING MEJORADO ---
+      # Coloca el caché ANTES de instalar dependencias para aprovecharlo si existe
+      - name: Cache Poetry virtualenv
         uses: actions/cache@v4
+        id: poetry-cache # Dale un ID para poder usar outputs si es necesario
         with:
-          path: .venv
+          path: .venv # La ruta donde Poetry crea el venv (gracias a POETRY_VIRTUALENVS_IN_PROJECT)
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      # FASE 1: CALIDAD DE CÓDIGO (RÁPIDA)
+      - name: Install dependencies
+        # Ejecuta install solo si el caché no fue restaurado completamente (opcional pero buena práctica)
+        # if: steps.poetry-cache.outputs.cache-hit != 'true'
+        # Sin el 'if' se ejecutará siempre, lo cual es más simple y asegura que todo esté al día
+        run: |
+          poetry install --no-interaction --no-root # Instala dependencias, --no-root si tu proyecto no es instalable en sí mismo
+
+      # --- FASE 1: CALIDAD DE CÓDIGO (RÁPIDA) ---
+      # (Tu sección de calidad parece correcta, la mantenemos igual)
       - name: Code Quality Checks
         id: code-quality
         run: |
           echo "::group::Running Black"
           poetry run black --check app tests || echo "::warning::Black formatting issues found"
+          echo "::endgroup::"
 
           echo "::group::Running isort"
           poetry run isort --check-only --profile black app tests || echo "::warning::Import sorting issues found"
+          echo "::endgroup::"
 
           echo "::group::Running flake8"
           poetry run flake8 app tests || echo "::warning::Linting issues found"
+          echo "::endgroup::"
 
           echo "::group::Running mypy"
           poetry run mypy app tests || echo "::warning::Type checking issues found"
+          echo "::endgroup::"
 
           echo "::group::Running bandit"
           poetry run bandit -r app -x tests || echo "::warning::Security issues found"
+          echo "::endgroup::"
 
-      # FASE 2: VERIFICACIÓN DE MIGRACIONES
-      - name: Create SQLite Database for Tests
+      # --- FASE 2: BASE DE DATOS Y MIGRACIONES ---
+      - name: Create SQLite Database Directory and File
         run: |
           mkdir -p /tmp/test_data
-          poetry run python -c "import sqlite3; sqlite3.connect('/tmp/test_data/sqlite.db')"
-          echo "SQLITE_URL=sqlite:////tmp/test_data/sqlite.db" >> .env
+          touch ${{ env.SQLITE_DB_PATH }} # Crea el archivo vacío
+          echo "SQLite DB file created at ${{ env.SQLITE_DB_PATH }}"
+          ls -la /tmp/test_data/ # Verifica que se creó
 
+      # CORRECCIÓN: No es necesario escribir a .env. Las variables definidas en 'env:' a nivel de Job
+      # están disponibles para todos los steps. Asegúrate de que tu aplicación/Alembic
+      # lean la variable de entorno 'SQLITE_URL'.
       - name: Verify Database Migrations
         id: migrations
-        env:
-          SQLITE_URL: sqlite:////tmp/test_data/sqlite.db
+        # Las variables de entorno ya están disponibles desde el 'env:' del Job
         run: |
-          echo "::group::Debug Database Path"
-          ls -la /tmp/test_data/
-
-          echo "::group::Forward Migrations"
+          echo "Running Alembic migrations..."
+          # Asegúrate de que tu alembic/env.py lee la variable de entorno SQLITE_URL
           poetry run alembic upgrade head
+          echo "Alembic migrations applied."
+        # Añade manejo de errores si quieres ser más explícito:
+        # || { echo "::error::Alembic migration failed!"; exit 1; }
 
-      # FASE 3: PRUEBAS UNITARIAS Y COBERTURA
+      # --- FASE 3: PRUEBAS UNITARIAS Y COBERTURA ---
       - name: Run Tests with Coverage
         id: tests
-        env:
-          SQLITE_URL: sqlite:////tmp/test_data/sqlite.db
-          API_PREFIX: /api/v1
-          PROJECT_NAME: 'FASTAPI KIT STARTER'
-          BACKEND_CORS_ORIGINS: '[*]'
-          LOGGING_CONFIG_FILE: 'logging.ini'
-          PROJECT_VERSION: '0.0.1'
+        # Las variables de entorno ya están disponibles desde el 'env:' del Job
         run: |
+          echo "Running pytest..."
+          # Pytest debería usar la misma SQLITE_URL si tu app/tests están configurados para leerla
           poetry run pytest --cov=app --cov-report=xml --cov-report=term tests/
+          echo "Pytest finished."
+        # Añade manejo de errores:
+        # || { echo "::error::Pytest failed!"; exit 1; }
 
+      # --- FASE 4: SUBIR RESULTADOS ---
       - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v4 # Usa la última versión estable
         with:
-          file: ./coverage.xml
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }} # Correcto uso de secrets
+          files: ./coverage.xml # Especifica el archivo (aunque a veces lo detecta solo)
+          fail_ci_if_error: false # No falla el build si Codecov falla
           verbose: true
+        # Opcional: Ejecutar solo en ciertos eventos para no gastar subidas
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      # FASE 4: GUARDAR RESULTADOS
       - name: Archive Test Results
+        # Ejecuta siempre para poder descargar los artefactos en caso de fallo
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.python-version }}
           path: |
             coverage.xml
-            .coverage
+            .coverage # Si necesitas el archivo binario de coverage
           retention-days: 7
