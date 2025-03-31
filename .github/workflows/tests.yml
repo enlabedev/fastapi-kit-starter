@@ -83,15 +83,16 @@ jobs:
         env:
           SQLITE_URL: sqlite:////tmp/test_data/sqlite.db
         run: |
-          echo "::group::Forward Migrations"
-          poetry run alembic upgrade head
+          echo "::group::Debug Database Path"
+          ls -la /tmp/test_data/
 
-          echo "::group::Backward Migrations"
-          poetry run alembic downgrade head-1
-          poetry run alembic upgrade head
+          echo "::group::Forward Migrations (Verbose)"
+          poetry run alembic upgrade head --verbose
+
+          echo "::group::Verify Database Structure"
+          poetry run python -c "import sqlite3; conn = sqlite3.connect('/tmp/test_data/sqlite.db'); print(conn.execute('SELECT name FROM sqlite_master WHERE type=\"table\";').fetchall())"
 
           echo "::group::Checking for missing migrations"
-          # Verificar si los modelos están sincronizados con las migraciones
           poetry run alembic revision --autogenerate -m "verification" --check-only || echo "::warning::Models out of sync with migrations"
 
       # FASE 3: PRUEBAS UNITARIAS Y COBERTURA
