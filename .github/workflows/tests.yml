@@ -69,10 +69,8 @@ jobs:
 
       - name: Run Linting
         run: |
-          poetry run flake8 app tests
-          poetry run mypy app tests
-          poetry run black --check app tests
-          poetry run isort --check-only app tests
+          poetry run pysen run lint
+          poetry run pysen run format
 
       - name: Run Security Check
         run: |
