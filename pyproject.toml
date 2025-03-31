@@ -12,6 +12,7 @@ sqlalchemy = "^2.0.39"
 alembic = "^1.15.1"
 psycopg2 = "^2.9.10"
 pydantic-settings = "^2.8.1"
+pytest-cov = "^6.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
