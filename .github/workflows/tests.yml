@@ -30,7 +30,7 @@ jobs:
       # Usamos github.workspace para asegurarnos de que está dentro del área de trabajo si fuera necesario,
       # aunque /tmp/ también funciona bien en los runners de GitHub. Mantendremos /tmp/ por ahora.
       SQLITE_DB_PATH: /tmp/test_data/sqlite.db
-      SQLITE_URL: sqlite:////tmp/test_data/sqlite.db # URL completa para Alembic/SQLAlchemy
+      SQLITE_URL: sqlite:///./sqlite.db # URL completa para Alembic/SQLAlchemy
       API_PREFIX: /api/v1
       PROJECT_NAME: 'FASTAPI KIT STARTER'
       BACKEND_CORS_ORIGINS: '[*]'
