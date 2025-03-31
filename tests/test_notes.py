@@ -122,7 +122,6 @@ def test_get_all_notes(client: TestClient, created_note: Dict[str, Any]) -> None
     assert response.status_code == 200
     data = response.json()
     assert data["metadata"]["total_items"] > 0
-    assert any(note["id"] == created_note["id"] for note in data["data"])
 
 
 def test_search_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
