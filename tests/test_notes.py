@@ -67,9 +67,9 @@ def created_note(
     """Crea una nota a través de la API y la devuelve."""
     payload = jsonable_encoder(test_note)
     response = client.post("/api/v1/notes", json=payload)
-    assert response.status_code == 200, (
-        f"Error al crear nota para test: {response.text}"
-    )
+    assert (
+        response.status_code == 200
+    ), f"Error al crear nota para test: {response.text}"
     return response.json()["data"]
 
 
