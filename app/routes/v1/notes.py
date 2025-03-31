@@ -82,4 +82,3 @@ async def update(
 async def delete(*, id: str, db: Session = Depends(get_db)) -> Dict[str, str]:
     controllers.notes.delete(db=db, id=id)
     return {"message": "Resource was deleted"}
-    return {"message": "Resource was deleted"}
