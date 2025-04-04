@@ -7,11 +7,12 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.12"
-fastapi = {extras = ["all"], version = "^0.115.12"}
+fastapi = { extras = ["all"], version = "^0.115.12" }
 sqlalchemy = "^2.0.39"
 alembic = "^1.15.1"
 psycopg2 = "^2.9.10"
 pydantic-settings = "^2.8.1"
+pytest-cov = "^6.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -45,6 +46,7 @@ include_trailing_comma = true
 line_length = 88
 multi_line_output = 3
 use_parentheses = true
+profile = "black"
 
 [tool.flake8]
 ignore = "E203 E266 E501 W503 F403 F401"
@@ -58,7 +60,7 @@ exclude = ".venv"
 version = "0.11"
 
 [tool.pysen.lint.source]
-  includes = ["app", "tests"]
+includes = ["app", "tests"]
 
 
 [tool.pysen.lint]
@@ -74,7 +76,7 @@ py_version = "py312"
 exclude = [".venv/"]
 
 [[tool.pysen.lint.mypy_targets]]
-    paths = ["app", "tests"]
+paths = ["app", "tests"]
 
 [tool.autopep8]
 max-line-length = 88

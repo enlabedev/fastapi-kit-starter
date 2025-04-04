@@ -2,14 +2,13 @@ import uuid
 from typing import Any, Dict, Generator
 
 import pytest
-from fastapi.encoders import jsonable_encoder
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
-
 from app.config.database import get_db
 from app.helpers.enum import NoteCategory
 from app.main import app
 from app.schemas.notes import NoteBaseSchema
+from fastapi.encoders import jsonable_encoder
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 
 @pytest.fixture
@@ -67,10 +66,11 @@ def created_note(
     """Crea una nota a través de la API y la devuelve."""
     payload = jsonable_encoder(test_note)
     response = client.post("/api/v1/notes", json=payload)
-    assert response.status_code == 200, (
-        f"Error al crear nota para test: {response.text}"
-    )
-    return response.json()["data"]
+    assert (
+        response.status_code == 200
+    ), f"Error al crear nota para test: {response.text}"
+    data: Dict[str, Any] = response.json()["data"]
+    return data
 
 
 def test_create_note(client: TestClient, test_note: NoteBaseSchema) -> None:
@@ -161,4 +161,6 @@ def test_delete_note(client: TestClient, created_note: Dict[str, Any]) -> None:
 
     # Verificar que la nota ya no existe
     response = client.get(f"/api/v1/notes/show/{note_id}")
+    assert response.status_code == 404
+    assert response.status_code == 404
     assert response.status_code == 404

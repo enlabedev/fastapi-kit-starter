@@ -7,3 +7,4 @@ class Notes(BareBaseModel):
     content = Column(Text, nullable=False)
     category = Column(String(50), nullable=True)
     published = Column(Boolean, nullable=False, default=True)
+    published = Column(Boolean, nullable=False, default=True)

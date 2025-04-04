@@ -1,9 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from app.helpers.enum import NoteCategory
 from app.schemas.base import MetadataSchema, ResponseSchemaBase
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class NoteBaseSchema(BaseModel):
@@ -22,35 +22,42 @@ class NoteBaseSchema(BaseModel):
 
 class NoteListSchema(ResponseSchemaBase):
     class NoteList(NoteBaseSchema):
-        id: str
-        title: str
+        # Usando Field para definir estos campos como requeridos pero con un valor por defecto
+        id: str = Field(..., description="ID de la nota")
+        title: str = Field(..., description="Título de la nota")
 
-    data: Optional[list[NoteList]]
-    metadata: Optional[MetadataSchema]
+    data: Optional[List[NoteList]] = None
+    metadata: Optional[MetadataSchema] = None
 
 
 class NoteDetailSchema(ResponseSchemaBase):
     class NoteDetail(NoteBaseSchema):
-        id: str
-        title: str
+        # Usando Field para definir estos campos como requeridos
+        id: str = Field(..., description="ID de la nota")
+        title: str = Field(..., description="Título de la nota")
 
-    data: Optional[NoteDetail]
+    data: Optional[NoteDetail] = None
 
 
 class NoteSchemaCreate(NoteBaseSchema):
-    title: str
-    content: str
-    category: NoteCategory
-    published: Optional[bool]
+    # Campos requeridos con anotaciones
+    title: str = Field(..., description="Título de la nota")
+    content: str = Field(..., description="Contenido de la nota")
+    # Usar el Enum directamente
+    category: NoteCategory = Field(..., description="Categoría de la nota")
+    # Field opcional con valor predeterminado
+    published: Optional[bool] = Field(False, description="Estado de publicación")
 
 
 class NoteSchemaUpdate(NoteBaseSchema):
-    id: str
-    title: str
-    content: str
-    category: NoteCategory
-    published: Optional[bool]
+    # Campos requeridos con anotaciones
+    id: str = Field(..., description="ID de la nota a actualizar")
+    title: str = Field(..., description="Título de la nota")
+    content: str = Field(..., description="Contenido de la nota")
+    category: NoteCategory = Field(..., description="Categoría de la nota")
+    published: Optional[bool] = Field(False, description="Estado de publicación")
 
 
 class NoteSchemaDelete(NoteBaseSchema):
-    id: str
+    # Campo requerido con anotación
+    id: str = Field(..., description="ID de la nota a eliminar")

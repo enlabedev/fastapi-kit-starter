@@ -3,3 +3,4 @@ from fastapi import APIRouter
 
 router = APIRouter()
 router.include_router(notes.router, tags=["notes"], prefix="/notes")
+router.include_router(notes.router, tags=["notes"], prefix="/notes")
