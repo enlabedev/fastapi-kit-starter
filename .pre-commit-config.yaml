@@ -27,7 +27,7 @@ repos:
         name: isort (python)
         files: backend/
         types: [file, python]
-        args: [-o, alembic, --src, '{{cookiecutter.project_slug}}/backend']
+        args: [-o, alembic, --src, 'app']
       - id: isort
         files: backend/
         name: isort (cython)
