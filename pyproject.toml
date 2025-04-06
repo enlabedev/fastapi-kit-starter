@@ -13,6 +13,7 @@ alembic = "^1.15.1"
 psycopg2 = "^2.9.10"
 pydantic-settings = "^2.8.1"
 pytest-cov = "^6.0.0"
+sqlmodel = "^0.0.24"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -33,7 +34,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool]
 [tool.black]
-line-length = 88
+line-length = 79
 target-version = ['py312']
 exclude = ".venv/"
 
@@ -43,14 +44,14 @@ ensure_newline_before_comments = true
 force_grid_wrap = 0
 force_single_line = false
 include_trailing_comma = true
-line_length = 88
+line_length = 79
 multi_line_output = 3
 use_parentheses = true
 profile = "black"
 
 [tool.flake8]
 ignore = "E203 E266 E501 W503 F403 F401"
-max-line-length = 88
+max-line-length = 79
 max-complexity = 18
 select = "B,C,E,F,W,T4,B9"
 verbose = true
@@ -69,7 +70,7 @@ enable_flake8 = true
 enable_isort = true
 enable_mypy = true
 mypy_preset = "strict"
-line_length = 88
+line_length = 79
 py_version = "py312"
 
 [tool.mypy]
@@ -79,7 +80,7 @@ exclude = [".venv/"]
 paths = ["app", "tests"]
 
 [tool.autopep8]
-max-line-length = 88
+max-line-length = 79
 verbose = true
 exclude = ".venv/"
 

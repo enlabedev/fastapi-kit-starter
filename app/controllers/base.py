@@ -73,7 +73,9 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         return self.q(*criterion, db=db).all()
 
-    def get(self, id: Any, db: Session, error_out: bool = False) -> Optional[ModelType]:
+    def get(
+        self, id: Any, db: Session, error_out: bool = False
+    ) -> Optional[ModelType]:
         """
         Get a single record by ID.
         """
@@ -97,15 +99,22 @@ class ControllerBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             db.rollback()
             message = str(e.orig).split(":")[-1].replace("\n", "").strip()
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=message
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=message,
             )
 
-    def read(self, db: Session, *, skip: int = 0, limit: int = 5000) -> List[ModelType]:
+    def read(
+        self, db: Session, *, skip: int = 0, limit: int = 5000
+    ) -> List[ModelType]:
         """
         Read multiple records with pagination.
         """
         result = (
-            db.query(self.model).order_by(self.model.id).offset(skip).limit(limit).all()
+            db.query(self.model)
+            .order_by(self.model.id)
+            .offset(skip)
+            .limit(limit)
+            .all()
         )
         return result
 

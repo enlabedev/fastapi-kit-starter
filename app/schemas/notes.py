@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import List, Optional
 
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.helpers.enum import NoteCategory
 from app.schemas.base import MetadataSchema, ResponseSchemaBase
-from pydantic import BaseModel, ConfigDict, Field
 
 
 class NoteBaseSchema(BaseModel):
@@ -16,13 +17,14 @@ class NoteBaseSchema(BaseModel):
     published: Optional[bool] = False
 
     model_config = ConfigDict(
-        from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
+        from_attributes=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
     )
 
 
 class NoteListSchema(ResponseSchemaBase):
     class NoteList(NoteBaseSchema):
-        # Usando Field para definir estos campos como requeridos pero con un valor por defecto
         id: str = Field(..., description="ID de la nota")
         title: str = Field(..., description="Título de la nota")
 
@@ -32,7 +34,6 @@ class NoteListSchema(ResponseSchemaBase):
 
 class NoteDetailSchema(ResponseSchemaBase):
     class NoteDetail(NoteBaseSchema):
-        # Usando Field para definir estos campos como requeridos
         id: str = Field(..., description="ID de la nota")
         title: str = Field(..., description="Título de la nota")
 

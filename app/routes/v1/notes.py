@@ -1,5 +1,8 @@
 from typing import Any, Dict
 
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
 from app import controllers
 from app.config.database import get_db
 from app.helpers.response import ResponseHelper
@@ -11,8 +14,6 @@ from app.schemas.notes import (
     NoteSchemaCreate,
     NoteSchemaUpdate,
 )
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 
@@ -31,7 +32,10 @@ async def get(
 
 @router.get("/search/{text}", response_model=NoteListSchema)
 async def search(
-    text: str = "", page: int = 0, pageSize: int = 10, db: Session = Depends(get_db)
+    text: str = "",
+    page: int = 0,
+    pageSize: int = 10,
+    db: Session = Depends(get_db),
 ) -> Dict[str, Any]:
     _query = controllers.notes.q(db=db)
     if text:
