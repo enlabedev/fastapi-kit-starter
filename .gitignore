@@ -377,3 +377,7 @@ $RECYCLE.BIN/
 *.lnk
 
 sqlite.db
+sqlite.db-journal
+*.sqlite3
+*.sqlite-journal
+uploads*
