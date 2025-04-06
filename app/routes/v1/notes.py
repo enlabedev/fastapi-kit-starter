@@ -1,5 +1,8 @@
 from typing import Any, Dict
 
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
 from app import controllers
 from app.config.database import get_db
 from app.helpers.response import ResponseHelper
@@ -11,8 +14,6 @@ from app.schemas.notes import (
     NoteSchemaCreate,
     NoteSchemaUpdate,
 )
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
 router = APIRouter()
 

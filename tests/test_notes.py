@@ -2,13 +2,14 @@ import uuid
 from typing import Any, Dict, Generator
 
 import pytest
+from fastapi.encoders import jsonable_encoder
+from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
+
 from app.config.database import get_db
 from app.helpers.enum import NoteCategory
 from app.main import app
 from app.schemas.notes import NoteBaseSchema
-from fastapi.encoders import jsonable_encoder
-from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 
 @pytest.fixture
@@ -66,9 +67,9 @@ def created_note(
     """Crea una nota a través de la API y la devuelve."""
     payload = jsonable_encoder(test_note)
     response = client.post("/api/v1/notes", json=payload)
-    assert (
-        response.status_code == 200
-    ), f"Error al crear nota para test: {response.text}"
+    assert response.status_code == 200, (
+        f"Error al crear nota para test: {response.text}"
+    )
     data: Dict[str, Any] = response.json()["data"]
     return data
 
@@ -125,9 +126,7 @@ def test_show_note(client: TestClient, created_note: Dict[str, Any]) -> None:
     assert data["data"]["title"] == created_note["title"]
 
 
-def test_get_all_notes(
-    client: TestClient, created_note: Dict[str, Any]
-) -> None:
+def test_get_all_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
     """Prueba la obtención de todas las notas."""
     response = client.get("/api/v1/notes/")
     assert response.status_code == 200
@@ -135,9 +134,7 @@ def test_get_all_notes(
     assert data["metadata"]["total_items"] > 0
 
 
-def test_search_notes(
-    client: TestClient, created_note: Dict[str, Any]
-) -> None:
+def test_search_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
     """Prueba la búsqueda de notas por texto."""
     # Buscar por título existente
     search_term = created_note["title"][:10]  # Usar parte del título
