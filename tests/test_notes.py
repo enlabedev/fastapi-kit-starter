@@ -125,7 +125,9 @@ def test_show_note(client: TestClient, created_note: Dict[str, Any]) -> None:
     assert data["data"]["title"] == created_note["title"]
 
 
-def test_get_all_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
+def test_get_all_notes(
+    client: TestClient, created_note: Dict[str, Any]
+) -> None:
     """Prueba la obtención de todas las notas."""
     response = client.get("/api/v1/notes/")
     assert response.status_code == 200
@@ -133,7 +135,9 @@ def test_get_all_notes(client: TestClient, created_note: Dict[str, Any]) -> None
     assert data["metadata"]["total_items"] > 0
 
 
-def test_search_notes(client: TestClient, created_note: Dict[str, Any]) -> None:
+def test_search_notes(
+    client: TestClient, created_note: Dict[str, Any]
+) -> None:
     """Prueba la búsqueda de notas por texto."""
     # Buscar por título existente
     search_term = created_note["title"][:10]  # Usar parte del título

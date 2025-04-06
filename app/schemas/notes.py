@@ -16,13 +16,14 @@ class NoteBaseSchema(BaseModel):
     published: Optional[bool] = False
 
     model_config = ConfigDict(
-        from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
+        from_attributes=True,
+        populate_by_name=True,
+        arbitrary_types_allowed=True,
     )
 
 
 class NoteListSchema(ResponseSchemaBase):
     class NoteList(NoteBaseSchema):
-        # Usando Field para definir estos campos como requeridos pero con un valor por defecto
         id: str = Field(..., description="ID de la nota")
         title: str = Field(..., description="Título de la nota")
 
@@ -32,7 +33,6 @@ class NoteListSchema(ResponseSchemaBase):
 
 class NoteDetailSchema(ResponseSchemaBase):
     class NoteDetail(NoteBaseSchema):
-        # Usando Field para definir estos campos como requeridos
         id: str = Field(..., description="ID de la nota")
         title: str = Field(..., description="Título de la nota")
 
@@ -46,7 +46,9 @@ class NoteSchemaCreate(NoteBaseSchema):
     # Usar el Enum directamente
     category: NoteCategory = Field(..., description="Categoría de la nota")
     # Field opcional con valor predeterminado
-    published: Optional[bool] = Field(False, description="Estado de publicación")
+    published: Optional[bool] = Field(
+        False, description="Estado de publicación"
+    )
 
 
 class NoteSchemaUpdate(NoteBaseSchema):
@@ -55,7 +57,9 @@ class NoteSchemaUpdate(NoteBaseSchema):
     title: str = Field(..., description="Título de la nota")
     content: str = Field(..., description="Contenido de la nota")
     category: NoteCategory = Field(..., description="Categoría de la nota")
-    published: Optional[bool] = Field(False, description="Estado de publicación")
+    published: Optional[bool] = Field(
+        False, description="Estado de publicación"
+    )
 
 
 class NoteSchemaDelete(NoteBaseSchema):

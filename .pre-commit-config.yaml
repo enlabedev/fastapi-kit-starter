@@ -1,22 +1,13 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.6.0
     hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
-# -   repo: local
-#     hooks:
-#       - id: pysen-format
-#         name: pysen-format
-#         entry: poetry run pysen format --check
-#         language: system
-#         types: [python]
-#         pass_filenames: false
-
-#       - id: pysen-lint
-#         name: pysen-lint
-#         entry: poetry run pysen lint
-#         language: system
-#         types: [python]
-#         pass_filenames: false
+      # Verificaciones generales de ficheros
+      - id: check-yaml
+      - id: end-of-file-fixer
+        # No excluimos alembic aquí porque
+        # estos hooks suelen ser muy rápidos e inofensivos.
+      - id: trailing-whitespace
+        # Igual, se aplica en todo excepto si tú prefieres excluir la carpeta
+        # alembic (si no la quieres tocar en absoluto).
+        # exclude: ^alembic/

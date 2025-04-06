@@ -31,7 +31,10 @@ async def get(
 
 @router.get("/search/{text}", response_model=NoteListSchema)
 async def search(
-    text: str = "", page: int = 0, pageSize: int = 10, db: Session = Depends(get_db)
+    text: str = "",
+    page: int = 0,
+    pageSize: int = 10,
+    db: Session = Depends(get_db),
 ) -> Dict[str, Any]:
     _query = controllers.notes.q(db=db)
     if text:
