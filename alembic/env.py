@@ -6,7 +6,7 @@ from alembic import context
 from app.config.database import SQLITE_URL
 from app.models.base import Base
 from app.models.categories import Category  # noqa: F401
-from app.models.notes import Notes  # noqa: F401
+from app.models.notes import Attachment, Notes  # noqa: F401
 from app.models.users import User, UserNotes  # noqa: F401
 
 # this is the Alembic Config object, which provides

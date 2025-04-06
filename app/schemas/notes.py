@@ -3,62 +3,68 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.helpers.enum import NoteCategory
-from app.schemas.base import MetadataSchema, ResponseSchemaBase
+from app.schemas.categories import CategoryResponse
+from app.schemas.users import UserResponse
 
 
-class NoteBaseSchema(BaseModel):
-    id: Optional[str] = None
-    title: str
-    content: str
-    category: Optional[str] = None
-    createdAt: Optional[datetime] = None
-    updatedAt: Optional[datetime] = None
-    published: Optional[bool] = False
+class NoteBase(BaseModel):
+    """Esquema base para notas"""
+
+    title: str = Field(..., min_length=1, max_length=200)
+    content: str = Field(..., min_length=1)
+    published: bool = False
+    category_id: Optional[str] = None
 
     model_config = ConfigDict(
-        from_attributes=True,
-        populate_by_name=True,
-        arbitrary_types_allowed=True,
+        from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
     )
 
 
-class NoteListSchema(ResponseSchemaBase):
-    class NoteList(NoteBaseSchema):
-        id: str = Field(..., description="ID de la nota")
-        title: str = Field(..., description="Título de la nota")
+class NoteCreate(NoteBase):
+    """Esquema para creación de notas"""
 
-    data: Optional[List[NoteList]] = None
-    metadata: Optional[MetadataSchema] = None
+    pass
 
 
-class NoteDetailSchema(ResponseSchemaBase):
-    class NoteDetail(NoteBaseSchema):
-        id: str = Field(..., description="ID de la nota")
-        title: str = Field(..., description="Título de la nota")
+class NoteUpdate(BaseModel):
+    """Esquema para actualización de notas"""
 
-    data: Optional[NoteDetail] = None
+    title: Optional[str] = Field(None, min_length=1, max_length=200)
+    content: Optional[str] = Field(None, min_length=1)
+    published: Optional[bool] = None
+    category_id: Optional[str] = None
 
-
-class NoteSchemaCreate(NoteBaseSchema):
-    # Campos requeridos con anotaciones
-    title: str = Field(..., description="Título de la nota")
-    content: str = Field(..., description="Contenido de la nota")
-    # Usar el Enum directamente
-    category: NoteCategory = Field(..., description="Categoría de la nota")
-    # Field opcional con valor predeterminado
-    published: Optional[bool] = Field(False, description="Estado de publicación")
+    model_config = ConfigDict(
+        from_attributes=True, populate_by_name=True, arbitrary_types_allowed=True
+    )
 
 
-class NoteSchemaUpdate(NoteBaseSchema):
-    # Campos requeridos con anotaciones
-    id: str = Field(..., description="ID de la nota a actualizar")
-    title: str = Field(..., description="Título de la nota")
-    content: str = Field(..., description="Contenido de la nota")
-    category: NoteCategory = Field(..., description="Categoría de la nota")
-    published: Optional[bool] = Field(False, description="Estado de publicación")
+class NoteInDB(NoteBase):
+    """Esquema para nota en la base de datos"""
+
+    id: str
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
 
 
-class NoteSchemaDelete(NoteBaseSchema):
-    # Campo requerido con anotación
-    id: str = Field(..., description="ID de la nota a eliminar")
+class NoteResponse(NoteBase):
+    """Esquema para respuesta de nota"""
+
+    id: str
+    createdAt: datetime
+    updatedAt: Optional[datetime] = None
+    category: Optional[CategoryResponse] = None
+    users: Optional[List[UserResponse]] = []
+
+
+class NoteListResponse(BaseModel):
+    """Esquema para lista de notas"""
+
+    data: List[NoteResponse]
+    metadata: dict
+
+
+class NoteDetailResponse(BaseModel):
+    """Esquema para detalle de nota"""
+
+    data: NoteResponse

@@ -54,7 +54,7 @@ def get_user(db: Session, username: str | None) -> Optional[User]:
 def authenticate_user(db: Session, username: str, password: str) -> Optional[User]:
     """Autentica a un usuario verificando sus credenciales."""
     user = get_user(db, username)
-    if not user or not verify_password(password, user.hashed_password.value):
+    if not user or not verify_password(password, user.hashed_password):
         return None
     return user
 
@@ -98,6 +98,15 @@ async def get_current_active_user(
     current_user: Annotated[User, Depends(get_current_user)],
 ) -> User:
     """Verifica que el usuario actual esté activo."""
-    if not current_user.is_active.value:
+    if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Usuario inactivo")
+    return current_user
+
+
+async def get_current_admin_user(
+    current_user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    """Verifica que el usuario actual sea administrador."""
+    if not current_user.is_admin:
+        raise HTTPException(status_code=400, detail="Usuario no autorizado")
     return current_user

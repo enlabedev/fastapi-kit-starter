@@ -12,4 +12,3 @@ class Category(BaseModel):
 
     # Relación uno a muchos con notas
     notes = relationship("Notes", back_populates="category")
-    notes = relationship("Notes", back_populates="category")
