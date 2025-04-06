@@ -18,7 +18,7 @@ class BaseClass:
 Base: Type[Any] = declarative_base(cls=BaseClass)
 
 
-class BareBaseModel(Base, BaseClass):  # type: ignore
+class BaseModel(Base, BaseClass):  # type: ignore
     __abstract__ = True
 
     id = Column(
