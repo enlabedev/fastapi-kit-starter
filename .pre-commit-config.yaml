@@ -37,3 +37,13 @@ repos:
         files: backend/
         name: isort (pyi)
         types: [pyi]
+
+  - repo: local
+    hooks:
+      - id: pytest
+        name: Run Pytest
+        entry: poetry run pytest -v --tb=short --disable-warnings -p no:warnings
+        language: system
+        types: [python]
+        pass_filenames: false
+        always_run: true
